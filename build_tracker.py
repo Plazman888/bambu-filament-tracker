@@ -4,7 +4,7 @@ from openpyxl.utils import get_column_letter
 import os, sys
 
 # ── Config ────────────────────────────────────────────────────────────────────
-TODAY = "3/19/26"
+TODAY = "3/20/26"
 
 XLSX_PATH = "/Users/michaelwhitney/Documents/AI STUFF/HTML files created by Claudette/Bambu_Filament_Tracker.xlsx"
 
@@ -15,19 +15,19 @@ FILAMENTS = {
         "colors": [
             ("Jade White",      True),
             ("Orange",          True),
-            ("Blue",            True),
+            ("Blue",            False),
             ("Gray",            True),
-            ("Beige",           False),
-            ("Silver",          False),
+            ("Beige",           True),
+            ("Silver",          True),
             ("Yellow",          True),
             ("Blue Grey",       False),
-            ("Pink",            True),
+            ("Pink",            False),
             ("Brown",           True),
             ("Red",             True),
             ("Black",           True),
             ("Bambu Green",     True),
             ("Bronze",          True),
-            ("Gold",            False),
+            ("Gold",            True),
             ("Purple",          False),
             ("Magenta",         False),
             ("Cyan",            True),
@@ -55,7 +55,7 @@ FILAMENTS = {
             ("Matte Lemon Yellow",   True),
             ("Matte Charcoal",       True),
             ("Matte Grass Green",    True),
-            ("Matte Latte Brown",    False),
+            ("Matte Latte Brown",    True),
             ("Matte Scarlet Red",    True),
             ("Matte Ice Blue",       False),
             ("Matte Lilac Purple",   True),
@@ -91,14 +91,14 @@ FILAMENTS = {
         "url": "https://us.store.bambulab.com/products/petg-hf",
         "colors": [
             ("Blue",         False),
-            ("Red",          False),
+            ("Red",          True),
             ("Black",        True),
             ("Gray",         False),
             ("White",        False),
             ("Dark Gray",    False),
             ("Cream",        False),
-            ("Orange",       False),
-            ("Green",        False),
+            ("Orange",       True),
+            ("Green",        True),
             ("Yellow",       False),
             ("Lime Green",   False),
             ("Forest Green", False),
