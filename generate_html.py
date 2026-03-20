@@ -245,7 +245,7 @@ def build_html(dates, filaments, color_map):
 
 <footer>
   <span>Data from <a href="https://us.store.bambulab.com" target="_blank">us.store.bambulab.com</a> · Updated daily</span>
-  <a href="mailto:plazman888@icloud.com">Contact</a>
+  <a href="mailto:plazman888@icloud.com">©2026 Plazman</a>
 </footer>
 
 <script>
