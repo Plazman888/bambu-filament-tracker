@@ -3,94 +3,148 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bambu Lab Filament Availability Tracker</title>
+  <title>Bambu Lab Filament Availability</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background: #111827;
       color: #e5e7eb;
-      min-height: 100vh;
     }
+
+    /* ── Header ── */
     header {
       background: #1f2937;
       border-bottom: 1px solid #374151;
-      padding: 1.25rem 1.5rem;
+      padding: 1rem 1.5rem;
       display: flex;
-      align-items: baseline;
+      align-items: center;
       justify-content: space-between;
       flex-wrap: wrap;
       gap: .5rem;
     }
-    header h1 {
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: #f9fafb;
+    header h1 { font-size: 1.1rem; font-weight: 700; color: #f9fafb; }
+    .header-meta { font-size: .78rem; color: #6b7280; text-align: right; }
+    .header-meta strong { color: #9ca3af; }
+
+    /* ── Chart ── */
+    .chart-wrap {
+      background: #1f2937;
+      border-bottom: 1px solid #374151;
+      padding: 1.25rem 1.5rem 1rem;
     }
-    .updated {
-      font-size: .8rem;
+    .chart-title {
+      font-size: .78rem;
+      font-weight: 600;
       color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-bottom: .75rem;
     }
-    main {
-      max-width: 960px;
-      margin: 0 auto;
-      padding: 1.5rem 1rem;
+
+    /* ── Columns ── */
+    .columns {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      grid-template-columns: repeat(3, 1fr);
       gap: 1rem;
+      padding: 1rem;
+      max-width: 1200px;
+      margin: 0 auto;
     }
-    .card {
+
+    /* ── Column header ── */
+    .col-header {
       background: #1f2937;
       border: 1px solid #374151;
-      border-radius: 10px;
-      padding: 1rem;
+      border-radius: 10px 10px 0 0;
+      padding: .9rem 1rem .75rem;
+      margin-bottom: 2px;
     }
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: .6rem;
-      gap: .5rem;
-    }
-    .card-title {
-      font-size: 1rem;
-      font-weight: 600;
+    .col-title {
+      font-size: 1.1rem;
+      font-weight: 700;
       color: #f9fafb;
-      margin-bottom: .15rem;
+      margin-bottom: .35rem;
     }
-    .store-link {
-      font-size: .72rem;
-      color: #6b7280;
-      text-decoration: none;
-    }
-    .store-link:hover { color: #9ca3af; }
-    .stats {
+    .col-summary {
       display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: .15rem;
-      white-space: nowrap;
+      gap: .75rem;
+      font-size: .8rem;
+      font-weight: 600;
+      margin-bottom: .5rem;
     }
-    .stat { font-size: .75rem; font-weight: 600; }
-    .stat.in  { color: #4ade80; }
-    .stat.out { color: #f87171; }
-    .stat.pct { color: #9ca3af; }
-    .progress-wrap {
+    .prog-wrap {
       height: 5px;
       background: #374151;
       border-radius: 99px;
-      margin-bottom: .75rem;
       overflow: hidden;
     }
-    .progress-bar {
+    .prog-bar {
       height: 100%;
       border-radius: 99px;
-      transition: width .3s;
     }
+
+    /* ── Collapsible sections ── */
+    details {
+      background: #1f2937;
+      border: 1px solid #374151;
+      border-top: none;
+      overflow: hidden;
+    }
+    details:last-child { border-radius: 0 0 10px 10px; }
+
+    summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: .6rem 1rem;
+      cursor: pointer;
+      user-select: none;
+      list-style: none;
+      gap: .5rem;
+    }
+    summary::-webkit-details-marker { display: none; }
+    summary::before {
+      content: "▸";
+      color: #4b5563;
+      font-size: .75rem;
+      transition: transform .2s;
+      flex-shrink: 0;
+    }
+    details[open] > summary::before { transform: rotate(90deg); }
+    summary:hover { background: #263244; }
+
+    .section-name {
+      font-size: .88rem;
+      font-weight: 600;
+      color: #e5e7eb;
+      flex: 1;
+    }
+    .section-meta {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      font-size: .75rem;
+    }
+    .shop-link {
+      color: #4b5563;
+      text-decoration: none;
+      font-size: .72rem;
+    }
+    .shop-link:hover { color: #9ca3af; }
+
+    /* ── Stats colors ── */
+    .si  { color: #4ade80; }
+    .so  { color: #f87171; }
+    .pct { color: #9ca3af; }
+
+    /* ── Pills ── */
     .pills {
       display: flex;
       flex-wrap: wrap;
       gap: .3rem;
+      padding: .6rem 1rem .75rem;
     }
     .pill {
       font-size: .7rem;
@@ -98,142 +152,168 @@
       border-radius: 99px;
       white-space: nowrap;
     }
-    .in-stock  { background: #14532d; color: #bbf7d0; }
-    .out-stock { background: #450a0a; color: #fca5a5; }
+    .pill.in  { background: #14532d; color: #bbf7d0; }
+    .pill.out { background: #450a0a; color: #fca5a5; }
+
+    /* ── Footer ── */
     footer {
       text-align: center;
       padding: 2rem 1rem;
-      font-size: .75rem;
-      color: #4b5563;
+      font-size: .72rem;
+      color: #374151;
+    }
+
+    /* ── Mobile: single column ── */
+    @media (max-width: 700px) {
+      .columns {
+        grid-template-columns: 1fr;
+        padding: .75rem;
+      }
+      header h1 { font-size: 1rem; }
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>🧵 Bambu Lab Filament Availability Tracker</h1>
-    <span class="updated">Last updated: 3/19/26</span>
-  </header>
-  <main>
-        <div class="card">
-          <div class="card-header">
-            <div>
-              <h2 class="card-title">PLA Basic</h2>
-              <a class="store-link" href="https://us.store.bambulab.com/products/pla-basic-filament" target="_blank">Shop ↗</a>
-            </div>
-            <div class="stats">
-              <span class="stat in">20 in stock</span>
-              <span class="stat out">10 out</span>
-              <span class="stat pct">67%</span>
-            </div>
-          </div>
-          <div class="progress-wrap">
-            <div class="progress-bar" style="width:67%; background:#ff9800"></div>
-          </div>
-          <div class="pills"><span class="pill in-stock" title="Jade White">✅ Jade White</span><span class="pill in-stock" title="Orange">✅ Orange</span><span class="pill in-stock" title="Blue">✅ Blue</span><span class="pill in-stock" title="Gray">✅ Gray</span><span class="pill out-stock" title="Beige">🚫 Beige</span><span class="pill out-stock" title="Silver">🚫 Silver</span><span class="pill in-stock" title="Yellow">✅ Yellow</span><span class="pill out-stock" title="Blue Grey">🚫 Blue Grey</span><span class="pill in-stock" title="Pink">✅ Pink</span><span class="pill in-stock" title="Brown">✅ Brown</span><span class="pill in-stock" title="Red">✅ Red</span><span class="pill in-stock" title="Black">✅ Black</span><span class="pill in-stock" title="Bambu Green">✅ Bambu Green</span><span class="pill in-stock" title="Bronze">✅ Bronze</span><span class="pill out-stock" title="Gold">🚫 Gold</span><span class="pill out-stock" title="Purple">🚫 Purple</span><span class="pill out-stock" title="Magenta">🚫 Magenta</span><span class="pill in-stock" title="Cyan">✅ Cyan</span><span class="pill in-stock" title="Mistletoe Green">✅ Mistletoe Green</span><span class="pill in-stock" title="Light Gray">✅ Light Gray</span><span class="pill out-stock" title="Dark Gray">🚫 Dark Gray</span><span class="pill in-stock" title="Maroon Red">✅ Maroon Red</span><span class="pill in-stock" title="Sunflower Yellow">✅ Sunflower Yellow</span><span class="pill in-stock" title="Turquoise">✅ Turquoise</span><span class="pill in-stock" title="Indigo Purple">✅ Indigo Purple</span><span class="pill out-stock" title="Bright Green">🚫 Bright Green</span><span class="pill in-stock" title="Cocoa Brown">✅ Cocoa Brown</span><span class="pill out-stock" title="Hot Pink">🚫 Hot Pink</span><span class="pill out-stock" title="Cobalt Blue">🚫 Cobalt Blue</span><span class="pill in-stock" title="Pumpkin Orange">✅ Pumpkin Orange</span></div>
+
+<header>
+  <h1>🧵 Bambu Lab Filament Availability</h1>
+  <div class="header-meta">
+    <strong>64</strong> in stock &nbsp;·&nbsp; <strong>38</strong> out
+    &nbsp;·&nbsp; Updated 3/19/26
+  </div>
+</header>
+
+<div class="chart-wrap">
+  <div class="chart-title">Colors by Filament Line</div>
+  <svg viewBox="0 0 376 186" width="100%" style="max-width:376px;display:block;margin:0 auto">
+      
+      <rect x="246" y="4" width="12" height="12" fill="#4472c4" rx="2"/>
+      <text x="262" y="14" fill="#9ca3af" font-size="11" font-family="system-ui">In Stock</text>
+      <rect x="316" y="4" width="12" height="12" fill="#c0504d" rx="2"/>
+      <text x="332" y="14" fill="#9ca3af" font-size="11" font-family="system-ui">Out</text>
+      <rect x="8" y="0" width="36" height="47" fill="#c0504d" rx="3"/><rect x="8" y="47" width="36" height="93" fill="#4472c4" rx="3"/><rect x="62" y="23" width="36" height="56" fill="#c0504d" rx="3"/><rect x="62" y="79" width="36" height="61" fill="#4472c4" rx="3"/><rect x="116" y="107" width="36" height="33" fill="#4472c4" rx="3"/><rect x="170" y="75" width="36" height="60" fill="#c0504d" rx="3"/><rect x="170" y="135" width="36" height="5" fill="#4472c4" rx="3"/><rect x="224" y="112" width="36" height="9" fill="#c0504d" rx="3"/><rect x="224" y="121" width="36" height="19" fill="#4472c4" rx="3"/><rect x="278" y="107" width="36" height="5" fill="#c0504d" rx="3"/><rect x="278" y="112" width="36" height="28" fill="#4472c4" rx="3"/><rect x="332" y="79" width="36" height="61" fill="#4472c4" rx="3"/>
+      <text x="26" y="154" text-anchor="middle" fill="#9ca3af" font-size="10" font-family="system-ui">PLA</text><text x="26" y="167" text-anchor="middle" fill="#9ca3af" font-size="10" font-family="system-ui">Basic</text><text x="80" y="154" text-anchor="middle" fill="#9ca3af" font-size="10" font-family="system-ui">PLA</text><text x="80" y="167" text-anchor="middle" fill="#9ca3af" font-size="10" font-family="system-ui">Matte</text><text x="134" y="154" text-anchor="middle" fill="#9ca3af" font-size="10" font-family="system-ui">PETG</text><text x="134" y="167" text-anchor="middle" fill="#9ca3af" font-size="10" font-family="system-ui">Basic</text><text x="188" y="154" text-anchor="middle" fill="#9ca3af" font-size="10" font-family="system-ui">PETG</text><text x="188" y="167" text-anchor="middle" fill="#9ca3af" font-size="10" font-family="system-ui">HF</text><text x="242" y="154" text-anchor="middle" fill="#9ca3af" font-size="10" font-family="system-ui">TPU</text><text x="242" y="167" text-anchor="middle" fill="#9ca3af" font-size="10" font-family="system-ui">95A HF</text><text x="296" y="154" text-anchor="middle" fill="#9ca3af" font-size="10" font-family="system-ui">TPU</text><text x="296" y="167" text-anchor="middle" fill="#9ca3af" font-size="10" font-family="system-ui">AMS</text><text x="350" y="154" text-anchor="middle" fill="#9ca3af" font-size="10" font-family="system-ui">TPU</text><text x="350" y="167" text-anchor="middle" fill="#9ca3af" font-size="10" font-family="system-ui">85/90A</text>
+    </svg>
+</div>
+
+<div class="columns">
+  
+    <div class="col">
+      <div class="col-header">
+        <div class="col-title">PLA</div>
+        <div class="col-summary">
+          <span class="si">33 in stock</span>
+          <span class="so">22 out</span>
+          <span class="pct">60%</span>
         </div>
-        <div class="card">
-          <div class="card-header">
-            <div>
-              <h2 class="card-title">PLA Matte</h2>
-              <a class="store-link" href="https://us.store.bambulab.com/products/pla-matte" target="_blank">Shop ↗</a>
-            </div>
-            <div class="stats">
-              <span class="stat in">13 in stock</span>
-              <span class="stat out">12 out</span>
-              <span class="stat pct">52%</span>
-            </div>
-          </div>
-          <div class="progress-wrap">
-            <div class="progress-bar" style="width:52%; background:#ff9800"></div>
-          </div>
-          <div class="pills"><span class="pill in-stock" title="Matte Ivory White">✅ Matte Ivory White</span><span class="pill in-stock" title="Matte Ash Gray">✅ Matte Ash Gray</span><span class="pill in-stock" title="Matte Mandarin Orange">✅ Matte Mandarin Orange</span><span class="pill out-stock" title="Matte Sakura Pink">🚫 Matte Sakura Pink</span><span class="pill in-stock" title="Matte Lemon Yellow">✅ Matte Lemon Yellow</span><span class="pill in-stock" title="Matte Charcoal">✅ Matte Charcoal</span><span class="pill in-stock" title="Matte Grass Green">✅ Matte Grass Green</span><span class="pill out-stock" title="Matte Latte Brown">🚫 Matte Latte Brown</span><span class="pill out-stock" title="Matte Scarlet Red">🚫 Matte Scarlet Red</span><span class="pill out-stock" title="Matte Ice Blue">🚫 Matte Ice Blue</span><span class="pill in-stock" title="Matte Lilac Purple">✅ Matte Lilac Purple</span><span class="pill in-stock" title="Matte Marine Blue">✅ Matte Marine Blue</span><span class="pill in-stock" title="Matte Dark Red">✅ Matte Dark Red</span><span class="pill out-stock" title="Matte Dark Blue">🚫 Matte Dark Blue</span><span class="pill in-stock" title="Matte Dark Brown">✅ Matte Dark Brown</span><span class="pill in-stock" title="Matte Dark Green">✅ Matte Dark Green</span><span class="pill out-stock" title="Matte Desert Tan">🚫 Matte Desert Tan</span><span class="pill out-stock" title="Matte Bone White">🚫 Matte Bone White</span><span class="pill out-stock" title="Matte Plum">🚫 Matte Plum</span><span class="pill out-stock" title="Matte Sky Blue">🚫 Matte Sky Blue</span><span class="pill out-stock" title="Matte Apple Green">🚫 Matte Apple Green</span><span class="pill in-stock" title="Matte Dark Chocolate">✅ Matte Dark Chocolate</span><span class="pill out-stock" title="Matte Caramel">🚫 Matte Caramel</span><span class="pill out-stock" title="Matte Terracotta">🚫 Matte Terracotta</span><span class="pill in-stock" title="Matte Nardo Gray">✅ Matte Nardo Gray</span></div>
+        <div class="prog-wrap"><div class="prog-bar" style="width:60%;background:#ff9800"></div></div>
+      </div>
+      
+        <details open>
+          <summary>
+            <span class="section-name">PLA Basic</span>
+            <span class="section-meta">
+              <span class="si">20✅</span>
+              <span class="so">10🚫</span>
+              <a class="shop-link" href="https://us.store.bambulab.com/products/pla-basic-filament" target="_blank" onclick="event.stopPropagation()">Shop ↗</a>
+            </span>
+          </summary>
+          <div class="pills"><span class="pill in" title="Jade White">✅ Jade White</span><span class="pill in" title="Orange">✅ Orange</span><span class="pill in" title="Blue">✅ Blue</span><span class="pill in" title="Gray">✅ Gray</span><span class="pill out" title="Beige">🚫 Beige</span><span class="pill out" title="Silver">🚫 Silver</span><span class="pill in" title="Yellow">✅ Yellow</span><span class="pill out" title="Blue Grey">🚫 Blue Grey</span><span class="pill in" title="Pink">✅ Pink</span><span class="pill in" title="Brown">✅ Brown</span><span class="pill in" title="Red">✅ Red</span><span class="pill in" title="Black">✅ Black</span><span class="pill in" title="Bambu Green">✅ Bambu Green</span><span class="pill in" title="Bronze">✅ Bronze</span><span class="pill out" title="Gold">🚫 Gold</span><span class="pill out" title="Purple">🚫 Purple</span><span class="pill out" title="Magenta">🚫 Magenta</span><span class="pill in" title="Cyan">✅ Cyan</span><span class="pill in" title="Mistletoe Green">✅ Mistletoe Green</span><span class="pill in" title="Light Gray">✅ Light Gray</span><span class="pill out" title="Dark Gray">🚫 Dark Gray</span><span class="pill in" title="Maroon Red">✅ Maroon Red</span><span class="pill in" title="Sunflower Yellow">✅ Sunflower Yellow</span><span class="pill in" title="Turquoise">✅ Turquoise</span><span class="pill in" title="Indigo Purple">✅ Indigo Purple</span><span class="pill out" title="Bright Green">🚫 Bright Green</span><span class="pill in" title="Cocoa Brown">✅ Cocoa Brown</span><span class="pill out" title="Hot Pink">🚫 Hot Pink</span><span class="pill out" title="Cobalt Blue">🚫 Cobalt Blue</span><span class="pill in" title="Pumpkin Orange">✅ Pumpkin Orange</span></div>
+        </details>
+        <details open>
+          <summary>
+            <span class="section-name">PLA Matte</span>
+            <span class="section-meta">
+              <span class="si">13✅</span>
+              <span class="so">12🚫</span>
+              <a class="shop-link" href="https://us.store.bambulab.com/products/pla-matte" target="_blank" onclick="event.stopPropagation()">Shop ↗</a>
+            </span>
+          </summary>
+          <div class="pills"><span class="pill in" title="Matte Ivory White">✅ Matte Ivory White</span><span class="pill in" title="Matte Ash Gray">✅ Matte Ash Gray</span><span class="pill in" title="Matte Mandarin Orange">✅ Matte Mandarin Orange</span><span class="pill out" title="Matte Sakura Pink">🚫 Matte Sakura Pink</span><span class="pill in" title="Matte Lemon Yellow">✅ Matte Lemon Yellow</span><span class="pill in" title="Matte Charcoal">✅ Matte Charcoal</span><span class="pill in" title="Matte Grass Green">✅ Matte Grass Green</span><span class="pill out" title="Matte Latte Brown">🚫 Matte Latte Brown</span><span class="pill out" title="Matte Scarlet Red">🚫 Matte Scarlet Red</span><span class="pill out" title="Matte Ice Blue">🚫 Matte Ice Blue</span><span class="pill in" title="Matte Lilac Purple">✅ Matte Lilac Purple</span><span class="pill in" title="Matte Marine Blue">✅ Matte Marine Blue</span><span class="pill in" title="Matte Dark Red">✅ Matte Dark Red</span><span class="pill out" title="Matte Dark Blue">🚫 Matte Dark Blue</span><span class="pill in" title="Matte Dark Brown">✅ Matte Dark Brown</span><span class="pill in" title="Matte Dark Green">✅ Matte Dark Green</span><span class="pill out" title="Matte Desert Tan">🚫 Matte Desert Tan</span><span class="pill out" title="Matte Bone White">🚫 Matte Bone White</span><span class="pill out" title="Matte Plum">🚫 Matte Plum</span><span class="pill out" title="Matte Sky Blue">🚫 Matte Sky Blue</span><span class="pill out" title="Matte Apple Green">🚫 Matte Apple Green</span><span class="pill in" title="Matte Dark Chocolate">✅ Matte Dark Chocolate</span><span class="pill out" title="Matte Caramel">🚫 Matte Caramel</span><span class="pill out" title="Matte Terracotta">🚫 Matte Terracotta</span><span class="pill in" title="Matte Nardo Gray">✅ Matte Nardo Gray</span></div>
+        </details>
+    </div>
+    <div class="col">
+      <div class="col-header">
+        <div class="col-title">PETG</div>
+        <div class="col-summary">
+          <span class="si">8 in stock</span>
+          <span class="so">13 out</span>
+          <span class="pct">38%</span>
         </div>
-        <div class="card">
-          <div class="card-header">
-            <div>
-              <h2 class="card-title">PETG Basic</h2>
-              <a class="store-link" href="https://us.store.bambulab.com/products/petg-basic" target="_blank">Shop ↗</a>
-            </div>
-            <div class="stats">
-              <span class="stat in">7 in stock</span>
-              <span class="stat out">0 out</span>
-              <span class="stat pct">100%</span>
-            </div>
-          </div>
-          <div class="progress-wrap">
-            <div class="progress-bar" style="width:100%; background:#4caf50"></div>
-          </div>
-          <div class="pills"><span class="pill in-stock" title="Black">✅ Black</span><span class="pill in-stock" title="White">✅ White</span><span class="pill in-stock" title="Gray">✅ Gray</span><span class="pill in-stock" title="Red">✅ Red</span><span class="pill in-stock" title="Yellow">✅ Yellow</span><span class="pill in-stock" title="Reflex Blue">✅ Reflex Blue</span><span class="pill in-stock" title="Dark Brown">✅ Dark Brown</span></div>
+        <div class="prog-wrap"><div class="prog-bar" style="width:38%;background:#f44336"></div></div>
+      </div>
+      
+        <details open>
+          <summary>
+            <span class="section-name">PETG Basic</span>
+            <span class="section-meta">
+              <span class="si">7✅</span>
+              <span class="so">0🚫</span>
+              <a class="shop-link" href="https://us.store.bambulab.com/products/petg-basic" target="_blank" onclick="event.stopPropagation()">Shop ↗</a>
+            </span>
+          </summary>
+          <div class="pills"><span class="pill in" title="Black">✅ Black</span><span class="pill in" title="White">✅ White</span><span class="pill in" title="Gray">✅ Gray</span><span class="pill in" title="Red">✅ Red</span><span class="pill in" title="Yellow">✅ Yellow</span><span class="pill in" title="Reflex Blue">✅ Reflex Blue</span><span class="pill in" title="Dark Brown">✅ Dark Brown</span></div>
+        </details>
+        <details open>
+          <summary>
+            <span class="section-name">PETG HF</span>
+            <span class="section-meta">
+              <span class="si">1✅</span>
+              <span class="so">13🚫</span>
+              <a class="shop-link" href="https://us.store.bambulab.com/products/petg-hf" target="_blank" onclick="event.stopPropagation()">Shop ↗</a>
+            </span>
+          </summary>
+          <div class="pills"><span class="pill out" title="Blue">🚫 Blue</span><span class="pill out" title="Red">🚫 Red</span><span class="pill in" title="Black">✅ Black</span><span class="pill out" title="Gray">🚫 Gray</span><span class="pill out" title="White">🚫 White</span><span class="pill out" title="Dark Gray">🚫 Dark Gray</span><span class="pill out" title="Cream">🚫 Cream</span><span class="pill out" title="Orange">🚫 Orange</span><span class="pill out" title="Green">🚫 Green</span><span class="pill out" title="Yellow">🚫 Yellow</span><span class="pill out" title="Lime Green">🚫 Lime Green</span><span class="pill out" title="Forest Green">🚫 Forest Green</span><span class="pill out" title="Lake Blue">🚫 Lake Blue</span><span class="pill out" title="Peanut Brown">🚫 Peanut Brown</span></div>
+        </details>
+    </div>
+    <div class="col">
+      <div class="col-header">
+        <div class="col-title">TPU</div>
+        <div class="col-summary">
+          <span class="si">23 in stock</span>
+          <span class="so">3 out</span>
+          <span class="pct">88%</span>
         </div>
-        <div class="card">
-          <div class="card-header">
-            <div>
-              <h2 class="card-title">PETG HF</h2>
-              <a class="store-link" href="https://us.store.bambulab.com/products/petg-hf" target="_blank">Shop ↗</a>
-            </div>
-            <div class="stats">
-              <span class="stat in">1 in stock</span>
-              <span class="stat out">13 out</span>
-              <span class="stat pct">7%</span>
-            </div>
-          </div>
-          <div class="progress-wrap">
-            <div class="progress-bar" style="width:7%; background:#f44336"></div>
-          </div>
-          <div class="pills"><span class="pill out-stock" title="Blue">🚫 Blue</span><span class="pill out-stock" title="Red">🚫 Red</span><span class="pill in-stock" title="Black">✅ Black</span><span class="pill out-stock" title="Gray">🚫 Gray</span><span class="pill out-stock" title="White">🚫 White</span><span class="pill out-stock" title="Dark Gray">🚫 Dark Gray</span><span class="pill out-stock" title="Cream">🚫 Cream</span><span class="pill out-stock" title="Orange">🚫 Orange</span><span class="pill out-stock" title="Green">🚫 Green</span><span class="pill out-stock" title="Yellow">🚫 Yellow</span><span class="pill out-stock" title="Lime Green">🚫 Lime Green</span><span class="pill out-stock" title="Forest Green">🚫 Forest Green</span><span class="pill out-stock" title="Lake Blue">🚫 Lake Blue</span><span class="pill out-stock" title="Peanut Brown">🚫 Peanut Brown</span></div>
-        </div>
-        <div class="card">
-          <div class="card-header">
-            <div>
-              <h2 class="card-title">TPU 95A HF</h2>
-              <a class="store-link" href="https://us.store.bambulab.com/products/tpu-95a-hf" target="_blank">Shop ↗</a>
-            </div>
-            <div class="stats">
-              <span class="stat in">4 in stock</span>
-              <span class="stat out">2 out</span>
-              <span class="stat pct">67%</span>
-            </div>
-          </div>
-          <div class="progress-wrap">
-            <div class="progress-bar" style="width:67%; background:#ff9800"></div>
-          </div>
-          <div class="pills"><span class="pill in-stock" title="Black">✅ Black</span><span class="pill out-stock" title="White">🚫 White</span><span class="pill in-stock" title="Gray">✅ Gray</span><span class="pill in-stock" title="Yellow">✅ Yellow</span><span class="pill in-stock" title="Blue">✅ Blue</span><span class="pill out-stock" title="Red">🚫 Red</span></div>
-        </div>
-        <div class="card">
-          <div class="card-header">
-            <div>
-              <h2 class="card-title">TPU for AMS</h2>
-              <a class="store-link" href="https://us.store.bambulab.com/products/tpu-for-ams" target="_blank">Shop ↗</a>
-            </div>
-            <div class="stats">
-              <span class="stat in">6 in stock</span>
-              <span class="stat out">1 out</span>
-              <span class="stat pct">86%</span>
-            </div>
-          </div>
-          <div class="progress-wrap">
-            <div class="progress-bar" style="width:86%; background:#4caf50"></div>
-          </div>
-          <div class="pills"><span class="pill in-stock" title="Red">✅ Red</span><span class="pill out-stock" title="Yellow">🚫 Yellow</span><span class="pill in-stock" title="Blue">✅ Blue</span><span class="pill in-stock" title="Neon Green">✅ Neon Green</span><span class="pill in-stock" title="White">✅ White</span><span class="pill in-stock" title="Gray">✅ Gray</span><span class="pill in-stock" title="Black">✅ Black</span></div>
-        </div>
-        <div class="card">
-          <div class="card-header">
-            <div>
-              <h2 class="card-title">TPU 85A-90A</h2>
-              <a class="store-link" href="https://us.store.bambulab.com/products/tpu-85a-tpu-90a" target="_blank">Shop ↗</a>
-            </div>
-            <div class="stats">
-              <span class="stat in">13 in stock</span>
-              <span class="stat out">0 out</span>
-              <span class="stat pct">100%</span>
-            </div>
-          </div>
-          <div class="progress-wrap">
-            <div class="progress-bar" style="width:100%; background:#4caf50"></div>
-          </div>
-          <div class="pills"><span class="pill in-stock" title="85A — Light Cyan">✅ 85A — Light Cyan</span><span class="pill in-stock" title="85A — Neon Orange">✅ 85A — Neon Orange</span><span class="pill in-stock" title="85A — Black">✅ 85A — Black</span><span class="pill in-stock" title="85A — Flesh">✅ 85A — Flesh</span><span class="pill in-stock" title="85A — Lime Green">✅ 85A — Lime Green</span><span class="pill in-stock" title="90A — Black">✅ 90A — Black</span><span class="pill in-stock" title="90A — White">✅ 90A — White</span><span class="pill in-stock" title="90A — Quicksilver">✅ 90A — Quicksilver</span><span class="pill in-stock" title="90A — Crystal Blue">✅ 90A — Crystal Blue</span><span class="pill in-stock" title="90A — Grape Jelly">✅ 90A — Grape Jelly</span><span class="pill in-stock" title="90A — Cocoa Brown">✅ 90A — Cocoa Brown</span><span class="pill in-stock" title="90A — Frozen">✅ 90A — Frozen</span><span class="pill in-stock" title="90A — Blaze">✅ 90A — Blaze</span></div>
-        </div>
-  </main>
-  <footer>Data scraped from us.store.bambulab.com · Updated daily</footer>
+        <div class="prog-wrap"><div class="prog-bar" style="width:88%;background:#4caf50"></div></div>
+      </div>
+      
+        <details open>
+          <summary>
+            <span class="section-name">TPU 95A HF</span>
+            <span class="section-meta">
+              <span class="si">4✅</span>
+              <span class="so">2🚫</span>
+              <a class="shop-link" href="https://us.store.bambulab.com/products/tpu-95a-hf" target="_blank" onclick="event.stopPropagation()">Shop ↗</a>
+            </span>
+          </summary>
+          <div class="pills"><span class="pill in" title="Black">✅ Black</span><span class="pill out" title="White">🚫 White</span><span class="pill in" title="Gray">✅ Gray</span><span class="pill in" title="Yellow">✅ Yellow</span><span class="pill in" title="Blue">✅ Blue</span><span class="pill out" title="Red">🚫 Red</span></div>
+        </details>
+        <details open>
+          <summary>
+            <span class="section-name">TPU for AMS</span>
+            <span class="section-meta">
+              <span class="si">6✅</span>
+              <span class="so">1🚫</span>
+              <a class="shop-link" href="https://us.store.bambulab.com/products/tpu-for-ams" target="_blank" onclick="event.stopPropagation()">Shop ↗</a>
+            </span>
+          </summary>
+          <div class="pills"><span class="pill in" title="Red">✅ Red</span><span class="pill out" title="Yellow">🚫 Yellow</span><span class="pill in" title="Blue">✅ Blue</span><span class="pill in" title="Neon Green">✅ Neon Green</span><span class="pill in" title="White">✅ White</span><span class="pill in" title="Gray">✅ Gray</span><span class="pill in" title="Black">✅ Black</span></div>
+        </details>
+        <details open>
+          <summary>
+            <span class="section-name">TPU 85A-90A</span>
+            <span class="section-meta">
+              <span class="si">13✅</span>
+              <span class="so">0🚫</span>
+              <a class="shop-link" href="https://us.store.bambulab.com/products/tpu-85a-tpu-90a" target="_blank" onclick="event.stopPropagation()">Shop ↗</a>
+            </span>
+          </summary>
+          <div class="pills"><span class="pill in" title="85A — Light Cyan">✅ 85A — Light Cyan</span><span class="pill in" title="85A — Neon Orange">✅ 85A — Neon Orange</span><span class="pill in" title="85A — Black">✅ 85A — Black</span><span class="pill in" title="85A — Flesh">✅ 85A — Flesh</span><span class="pill in" title="85A — Lime Green">✅ 85A — Lime Green</span><span class="pill in" title="90A — Black">✅ 90A — Black</span><span class="pill in" title="90A — White">✅ 90A — White</span><span class="pill in" title="90A — Quicksilver">✅ 90A — Quicksilver</span><span class="pill in" title="90A — Crystal Blue">✅ 90A — Crystal Blue</span><span class="pill in" title="90A — Grape Jelly">✅ 90A — Grape Jelly</span><span class="pill in" title="90A — Cocoa Brown">✅ 90A — Cocoa Brown</span><span class="pill in" title="90A — Frozen">✅ 90A — Frozen</span><span class="pill in" title="90A — Blaze">✅ 90A — Blaze</span></div>
+        </details>
+    </div>
+</div>
+
+<footer>Data scraped from us.store.bambulab.com · Updated daily</footer>
+
 </body>
 </html>
