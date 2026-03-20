@@ -289,12 +289,16 @@ function toggleTheme() {
   localStorage.setItem("theme", isDark ? "light" : "dark");
 }
 (function() {
+  /* ?reset clears saved theme and drops the param from the URL */
+  if (location.search.includes("reset")) {
+    localStorage.removeItem("theme");
+    history.replaceState(null, "", location.pathname);
+  }
   const saved = localStorage.getItem("theme");
   if (saved) {
     document.documentElement.setAttribute("data-theme", saved);
     document.getElementById("theme-toggle").textContent = saved === "dark" ? "☀️" : "🌙";
   } else {
-    /* default is light, so show moon to offer dark */
     document.getElementById("theme-toggle").textContent = "🌙";
   }
 })();
