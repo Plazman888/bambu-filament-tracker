@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,40 +7,113 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    /* ── Tokens ── */
+    :root {
+      --bg:          #111827;
+      --surface:     #1f2937;
+      --surface2:    #263244;
+      --border:      #374151;
+      --text:        #e5e7eb;
+      --text-muted:  #9ca3af;
+      --text-dim:    #6b7280;
+      --in-bg:       #14532d;
+      --in-fg:       #bbf7d0;
+      --out-bg:      #450a0a;
+      --out-fg:      #fca5a5;
+      --in-stat:     #4ade80;
+      --out-stat:    #f87171;
+      --accent:      #3b82f6;
+    }
+    [data-theme="light"] {
+      --bg:          #f3f4f6;
+      --surface:     #ffffff;
+      --surface2:    #f9fafb;
+      --border:      #d1d5db;
+      --text:        #111827;
+      --text-muted:  #4b5563;
+      --text-dim:    #9ca3af;
+      --in-bg:       #dcfce7;
+      --in-fg:       #166534;
+      --out-bg:      #fee2e2;
+      --out-fg:      #991b1b;
+      --in-stat:     #16a34a;
+      --out-stat:    #dc2626;
+      --accent:      #2563eb;
+    }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #111827;
-      color: #e5e7eb;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      transition: background .2s, color .2s;
     }
 
     /* ── Header ── */
     header {
-      background: #1f2937;
-      border-bottom: 1px solid #374151;
-      padding: 1rem 1.5rem;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: .85rem 1.25rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
       flex-wrap: wrap;
-      gap: .5rem;
+      gap: .6rem;
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
-    header h1 { font-size: 1.1rem; font-weight: 700; color: #f9fafb; }
-    .header-meta { font-size: .78rem; color: #6b7280; text-align: right; }
-    .header-meta strong { color: #9ca3af; }
+    header h1 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text);
+      white-space: nowrap;
+    }
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      flex-wrap: wrap;
+    }
+    .date-label {
+      font-size: .78rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+    #date-picker {
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: .3rem .55rem;
+      font-size: .82rem;
+      cursor: pointer;
+    }
+    #theme-toggle {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: .3rem .6rem;
+      font-size: .9rem;
+      cursor: pointer;
+      color: var(--text);
+      line-height: 1;
+    }
+    #theme-toggle:hover { background: var(--surface2); }
 
     /* ── Chart ── */
     .chart-wrap {
-      background: #1f2937;
-      border-bottom: 1px solid #374151;
-      padding: 1.25rem 1.5rem 1rem;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 1.5rem .85rem;
     }
     .chart-title {
-      font-size: .78rem;
+      font-size: .72rem;
       font-weight: 600;
-      color: #6b7280;
+      color: var(--text-dim);
       text-transform: uppercase;
-      letter-spacing: .06em;
-      margin-bottom: .75rem;
+      letter-spacing: .07em;
+      margin-bottom: .6rem;
     }
 
     /* ── Columns ── */
@@ -53,123 +126,127 @@
       margin: 0 auto;
     }
 
-    /* ── Column header ── */
+    /* ── Column card ── */
     .col-header {
-      background: #1f2937;
-      border: 1px solid #374151;
+      background: var(--surface);
+      border: 1px solid var(--border);
       border-radius: 10px 10px 0 0;
-      padding: .9rem 1rem .75rem;
+      padding: .85rem 1rem .7rem;
       margin-bottom: 2px;
     }
     .col-title {
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 700;
-      color: #f9fafb;
-      margin-bottom: .35rem;
+      color: var(--text);
+      margin-bottom: .3rem;
     }
     .col-summary {
       display: flex;
-      gap: .75rem;
+      gap: .7rem;
       font-size: .8rem;
       font-weight: 600;
-      margin-bottom: .5rem;
+      margin-bottom: .45rem;
     }
     .prog-wrap {
       height: 5px;
-      background: #374151;
+      background: var(--border);
       border-radius: 99px;
       overflow: hidden;
     }
     .prog-bar {
       height: 100%;
       border-radius: 99px;
+      transition: width .3s;
     }
 
     /* ── Collapsible sections ── */
     details {
-      background: #1f2937;
-      border: 1px solid #374151;
+      background: var(--surface);
+      border: 1px solid var(--border);
       border-top: none;
-      overflow: hidden;
     }
     details:last-child { border-radius: 0 0 10px 10px; }
-
     summary {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      padding: .6rem 1rem;
+      gap: .5rem;
+      padding: .55rem 1rem;
       cursor: pointer;
       user-select: none;
       list-style: none;
-      gap: .5rem;
     }
     summary::-webkit-details-marker { display: none; }
-    summary::before {
-      content: "▸";
-      color: #4b5563;
-      font-size: .75rem;
+    .triangle {
+      font-size: 1.1rem;
+      color: var(--text-dim);
       transition: transform .2s;
       flex-shrink: 0;
+      display: inline-block;
+      line-height: 1;
     }
-    details[open] > summary::before { transform: rotate(90deg); }
-    summary:hover { background: #263244; }
+    details[open] .triangle { transform: rotate(90deg); }
+    summary:hover { background: var(--surface2); }
 
     .section-name {
       font-size: .88rem;
       font-weight: 600;
-      color: #e5e7eb;
+      color: var(--text);
       flex: 1;
     }
     .section-meta {
       display: flex;
       align-items: center;
-      gap: .5rem;
+      gap: .45rem;
       font-size: .75rem;
+      font-weight: 600;
     }
     .shop-link {
-      color: #4b5563;
+      color: var(--text-dim);
       text-decoration: none;
+      font-weight: 400;
       font-size: .72rem;
     }
-    .shop-link:hover { color: #9ca3af; }
+    .shop-link:hover { color: var(--text-muted); }
 
-    /* ── Stats colors ── */
-    .si  { color: #4ade80; }
-    .so  { color: #f87171; }
-    .pct { color: #9ca3af; }
+    /* ── Stat colors ── */
+    .si  { color: var(--in-stat); }
+    .so  { color: var(--out-stat); }
+    .pct { color: var(--text-muted); }
 
     /* ── Pills ── */
     .pills {
       display: flex;
       flex-wrap: wrap;
-      gap: .3rem;
-      padding: .6rem 1rem .75rem;
+      gap: .28rem;
+      padding: .55rem 1rem .7rem;
     }
     .pill {
       font-size: .7rem;
-      padding: .2rem .45rem;
+      padding: .18rem .42rem;
       border-radius: 99px;
       white-space: nowrap;
     }
-    .pill.in  { background: #14532d; color: #bbf7d0; }
-    .pill.out { background: #450a0a; color: #fca5a5; }
+    .pill.in  { background: var(--in-bg);  color: var(--in-fg); }
+    .pill.out { background: var(--out-bg); color: var(--out-fg); }
 
     /* ── Footer ── */
     footer {
       text-align: center;
       padding: 2rem 1rem;
-      font-size: .72rem;
-      color: #374151;
+      font-size: .75rem;
+      color: var(--text-dim);
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
     }
+    footer a { color: var(--text-muted); text-decoration: none; }
+    footer a:hover { color: var(--text); }
 
-    /* ── Mobile: single column ── */
+    /* ── Mobile ── */
     @media (max-width: 700px) {
-      .columns {
-        grid-template-columns: 1fr;
-        padding: .75rem;
-      }
-      header h1 { font-size: 1rem; }
+      .columns { grid-template-columns: 1fr; padding: .75rem; }
+      header h1 { font-size: .95rem; }
     }
   </style>
 </head>
@@ -177,143 +254,182 @@
 
 <header>
   <h1>🧵 Bambu Lab Filament Availability</h1>
-  <div class="header-meta">
-    <strong>64</strong> in stock &nbsp;·&nbsp; <strong>38</strong> out
-    &nbsp;·&nbsp; Updated 3/19/26
+  <div class="controls">
+    <span class="date-label">Showing:</span>
+    <select id="date-picker" onchange="render(this.value)"></select>
+    <button id="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark mode">☀️</button>
   </div>
 </header>
 
 <div class="chart-wrap">
   <div class="chart-title">Colors by Filament Line</div>
-  <svg viewBox="0 0 376 186" width="100%" style="max-width:376px;display:block;margin:0 auto">
-      
-      <rect x="246" y="4" width="12" height="12" fill="#4472c4" rx="2"/>
-      <text x="262" y="14" fill="#9ca3af" font-size="11" font-family="system-ui">In Stock</text>
-      <rect x="316" y="4" width="12" height="12" fill="#c0504d" rx="2"/>
-      <text x="332" y="14" fill="#9ca3af" font-size="11" font-family="system-ui">Out</text>
-      <rect x="8" y="0" width="36" height="47" fill="#c0504d" rx="3"/><rect x="8" y="47" width="36" height="93" fill="#4472c4" rx="3"/><rect x="62" y="23" width="36" height="56" fill="#c0504d" rx="3"/><rect x="62" y="79" width="36" height="61" fill="#4472c4" rx="3"/><rect x="116" y="107" width="36" height="33" fill="#4472c4" rx="3"/><rect x="170" y="75" width="36" height="60" fill="#c0504d" rx="3"/><rect x="170" y="135" width="36" height="5" fill="#4472c4" rx="3"/><rect x="224" y="112" width="36" height="9" fill="#c0504d" rx="3"/><rect x="224" y="121" width="36" height="19" fill="#4472c4" rx="3"/><rect x="278" y="107" width="36" height="5" fill="#c0504d" rx="3"/><rect x="278" y="112" width="36" height="28" fill="#4472c4" rx="3"/><rect x="332" y="79" width="36" height="61" fill="#4472c4" rx="3"/>
-      <text x="26" y="154" text-anchor="middle" fill="#9ca3af" font-size="10" font-family="system-ui">PLA</text><text x="26" y="167" text-anchor="middle" fill="#9ca3af" font-size="10" font-family="system-ui">Basic</text><text x="80" y="154" text-anchor="middle" fill="#9ca3af" font-size="10" font-family="system-ui">PLA</text><text x="80" y="167" text-anchor="middle" fill="#9ca3af" font-size="10" font-family="system-ui">Matte</text><text x="134" y="154" text-anchor="middle" fill="#9ca3af" font-size="10" font-family="system-ui">PETG</text><text x="134" y="167" text-anchor="middle" fill="#9ca3af" font-size="10" font-family="system-ui">Basic</text><text x="188" y="154" text-anchor="middle" fill="#9ca3af" font-size="10" font-family="system-ui">PETG</text><text x="188" y="167" text-anchor="middle" fill="#9ca3af" font-size="10" font-family="system-ui">HF</text><text x="242" y="154" text-anchor="middle" fill="#9ca3af" font-size="10" font-family="system-ui">TPU</text><text x="242" y="167" text-anchor="middle" fill="#9ca3af" font-size="10" font-family="system-ui">95A HF</text><text x="296" y="154" text-anchor="middle" fill="#9ca3af" font-size="10" font-family="system-ui">TPU</text><text x="296" y="167" text-anchor="middle" fill="#9ca3af" font-size="10" font-family="system-ui">AMS</text><text x="350" y="154" text-anchor="middle" fill="#9ca3af" font-size="10" font-family="system-ui">TPU</text><text x="350" y="167" text-anchor="middle" fill="#9ca3af" font-size="10" font-family="system-ui">85/90A</text>
-    </svg>
+  <div id="chart"></div>
 </div>
 
-<div class="columns">
-  
-    <div class="col">
-      <div class="col-header">
-        <div class="col-title">PLA</div>
-        <div class="col-summary">
-          <span class="si">33 in stock</span>
-          <span class="so">22 out</span>
-          <span class="pct">60%</span>
-        </div>
-        <div class="prog-wrap"><div class="prog-bar" style="width:60%;background:#ff9800"></div></div>
-      </div>
-      
-        <details open>
-          <summary>
-            <span class="section-name">PLA Basic</span>
-            <span class="section-meta">
-              <span class="si">20✅</span>
-              <span class="so">10🚫</span>
-              <a class="shop-link" href="https://us.store.bambulab.com/products/pla-basic-filament" target="_blank" onclick="event.stopPropagation()">Shop ↗</a>
-            </span>
-          </summary>
-          <div class="pills"><span class="pill in" title="Jade White">✅ Jade White</span><span class="pill in" title="Orange">✅ Orange</span><span class="pill in" title="Blue">✅ Blue</span><span class="pill in" title="Gray">✅ Gray</span><span class="pill out" title="Beige">🚫 Beige</span><span class="pill out" title="Silver">🚫 Silver</span><span class="pill in" title="Yellow">✅ Yellow</span><span class="pill out" title="Blue Grey">🚫 Blue Grey</span><span class="pill in" title="Pink">✅ Pink</span><span class="pill in" title="Brown">✅ Brown</span><span class="pill in" title="Red">✅ Red</span><span class="pill in" title="Black">✅ Black</span><span class="pill in" title="Bambu Green">✅ Bambu Green</span><span class="pill in" title="Bronze">✅ Bronze</span><span class="pill out" title="Gold">🚫 Gold</span><span class="pill out" title="Purple">🚫 Purple</span><span class="pill out" title="Magenta">🚫 Magenta</span><span class="pill in" title="Cyan">✅ Cyan</span><span class="pill in" title="Mistletoe Green">✅ Mistletoe Green</span><span class="pill in" title="Light Gray">✅ Light Gray</span><span class="pill out" title="Dark Gray">🚫 Dark Gray</span><span class="pill in" title="Maroon Red">✅ Maroon Red</span><span class="pill in" title="Sunflower Yellow">✅ Sunflower Yellow</span><span class="pill in" title="Turquoise">✅ Turquoise</span><span class="pill in" title="Indigo Purple">✅ Indigo Purple</span><span class="pill out" title="Bright Green">🚫 Bright Green</span><span class="pill in" title="Cocoa Brown">✅ Cocoa Brown</span><span class="pill out" title="Hot Pink">🚫 Hot Pink</span><span class="pill out" title="Cobalt Blue">🚫 Cobalt Blue</span><span class="pill in" title="Pumpkin Orange">✅ Pumpkin Orange</span></div>
-        </details>
-        <details open>
-          <summary>
-            <span class="section-name">PLA Matte</span>
-            <span class="section-meta">
-              <span class="si">13✅</span>
-              <span class="so">12🚫</span>
-              <a class="shop-link" href="https://us.store.bambulab.com/products/pla-matte" target="_blank" onclick="event.stopPropagation()">Shop ↗</a>
-            </span>
-          </summary>
-          <div class="pills"><span class="pill in" title="Matte Ivory White">✅ Matte Ivory White</span><span class="pill in" title="Matte Ash Gray">✅ Matte Ash Gray</span><span class="pill in" title="Matte Mandarin Orange">✅ Matte Mandarin Orange</span><span class="pill out" title="Matte Sakura Pink">🚫 Matte Sakura Pink</span><span class="pill in" title="Matte Lemon Yellow">✅ Matte Lemon Yellow</span><span class="pill in" title="Matte Charcoal">✅ Matte Charcoal</span><span class="pill in" title="Matte Grass Green">✅ Matte Grass Green</span><span class="pill out" title="Matte Latte Brown">🚫 Matte Latte Brown</span><span class="pill out" title="Matte Scarlet Red">🚫 Matte Scarlet Red</span><span class="pill out" title="Matte Ice Blue">🚫 Matte Ice Blue</span><span class="pill in" title="Matte Lilac Purple">✅ Matte Lilac Purple</span><span class="pill in" title="Matte Marine Blue">✅ Matte Marine Blue</span><span class="pill in" title="Matte Dark Red">✅ Matte Dark Red</span><span class="pill out" title="Matte Dark Blue">🚫 Matte Dark Blue</span><span class="pill in" title="Matte Dark Brown">✅ Matte Dark Brown</span><span class="pill in" title="Matte Dark Green">✅ Matte Dark Green</span><span class="pill out" title="Matte Desert Tan">🚫 Matte Desert Tan</span><span class="pill out" title="Matte Bone White">🚫 Matte Bone White</span><span class="pill out" title="Matte Plum">🚫 Matte Plum</span><span class="pill out" title="Matte Sky Blue">🚫 Matte Sky Blue</span><span class="pill out" title="Matte Apple Green">🚫 Matte Apple Green</span><span class="pill in" title="Matte Dark Chocolate">✅ Matte Dark Chocolate</span><span class="pill out" title="Matte Caramel">🚫 Matte Caramel</span><span class="pill out" title="Matte Terracotta">🚫 Matte Terracotta</span><span class="pill in" title="Matte Nardo Gray">✅ Matte Nardo Gray</span></div>
-        </details>
-    </div>
-    <div class="col">
-      <div class="col-header">
-        <div class="col-title">PETG</div>
-        <div class="col-summary">
-          <span class="si">8 in stock</span>
-          <span class="so">13 out</span>
-          <span class="pct">38%</span>
-        </div>
-        <div class="prog-wrap"><div class="prog-bar" style="width:38%;background:#f44336"></div></div>
-      </div>
-      
-        <details open>
-          <summary>
-            <span class="section-name">PETG Basic</span>
-            <span class="section-meta">
-              <span class="si">7✅</span>
-              <span class="so">0🚫</span>
-              <a class="shop-link" href="https://us.store.bambulab.com/products/petg-basic" target="_blank" onclick="event.stopPropagation()">Shop ↗</a>
-            </span>
-          </summary>
-          <div class="pills"><span class="pill in" title="Black">✅ Black</span><span class="pill in" title="White">✅ White</span><span class="pill in" title="Gray">✅ Gray</span><span class="pill in" title="Red">✅ Red</span><span class="pill in" title="Yellow">✅ Yellow</span><span class="pill in" title="Reflex Blue">✅ Reflex Blue</span><span class="pill in" title="Dark Brown">✅ Dark Brown</span></div>
-        </details>
-        <details open>
-          <summary>
-            <span class="section-name">PETG HF</span>
-            <span class="section-meta">
-              <span class="si">1✅</span>
-              <span class="so">13🚫</span>
-              <a class="shop-link" href="https://us.store.bambulab.com/products/petg-hf" target="_blank" onclick="event.stopPropagation()">Shop ↗</a>
-            </span>
-          </summary>
-          <div class="pills"><span class="pill out" title="Blue">🚫 Blue</span><span class="pill out" title="Red">🚫 Red</span><span class="pill in" title="Black">✅ Black</span><span class="pill out" title="Gray">🚫 Gray</span><span class="pill out" title="White">🚫 White</span><span class="pill out" title="Dark Gray">🚫 Dark Gray</span><span class="pill out" title="Cream">🚫 Cream</span><span class="pill out" title="Orange">🚫 Orange</span><span class="pill out" title="Green">🚫 Green</span><span class="pill out" title="Yellow">🚫 Yellow</span><span class="pill out" title="Lime Green">🚫 Lime Green</span><span class="pill out" title="Forest Green">🚫 Forest Green</span><span class="pill out" title="Lake Blue">🚫 Lake Blue</span><span class="pill out" title="Peanut Brown">🚫 Peanut Brown</span></div>
-        </details>
-    </div>
-    <div class="col">
-      <div class="col-header">
-        <div class="col-title">TPU</div>
-        <div class="col-summary">
-          <span class="si">23 in stock</span>
-          <span class="so">3 out</span>
-          <span class="pct">88%</span>
-        </div>
-        <div class="prog-wrap"><div class="prog-bar" style="width:88%;background:#4caf50"></div></div>
-      </div>
-      
-        <details open>
-          <summary>
-            <span class="section-name">TPU 95A HF</span>
-            <span class="section-meta">
-              <span class="si">4✅</span>
-              <span class="so">2🚫</span>
-              <a class="shop-link" href="https://us.store.bambulab.com/products/tpu-95a-hf" target="_blank" onclick="event.stopPropagation()">Shop ↗</a>
-            </span>
-          </summary>
-          <div class="pills"><span class="pill in" title="Black">✅ Black</span><span class="pill out" title="White">🚫 White</span><span class="pill in" title="Gray">✅ Gray</span><span class="pill in" title="Yellow">✅ Yellow</span><span class="pill in" title="Blue">✅ Blue</span><span class="pill out" title="Red">🚫 Red</span></div>
-        </details>
-        <details open>
-          <summary>
-            <span class="section-name">TPU for AMS</span>
-            <span class="section-meta">
-              <span class="si">6✅</span>
-              <span class="so">1🚫</span>
-              <a class="shop-link" href="https://us.store.bambulab.com/products/tpu-for-ams" target="_blank" onclick="event.stopPropagation()">Shop ↗</a>
-            </span>
-          </summary>
-          <div class="pills"><span class="pill in" title="Red">✅ Red</span><span class="pill out" title="Yellow">🚫 Yellow</span><span class="pill in" title="Blue">✅ Blue</span><span class="pill in" title="Neon Green">✅ Neon Green</span><span class="pill in" title="White">✅ White</span><span class="pill in" title="Gray">✅ Gray</span><span class="pill in" title="Black">✅ Black</span></div>
-        </details>
-        <details open>
-          <summary>
-            <span class="section-name">TPU 85A-90A</span>
-            <span class="section-meta">
-              <span class="si">13✅</span>
-              <span class="so">0🚫</span>
-              <a class="shop-link" href="https://us.store.bambulab.com/products/tpu-85a-tpu-90a" target="_blank" onclick="event.stopPropagation()">Shop ↗</a>
-            </span>
-          </summary>
-          <div class="pills"><span class="pill in" title="85A — Light Cyan">✅ 85A — Light Cyan</span><span class="pill in" title="85A — Neon Orange">✅ 85A — Neon Orange</span><span class="pill in" title="85A — Black">✅ 85A — Black</span><span class="pill in" title="85A — Flesh">✅ 85A — Flesh</span><span class="pill in" title="85A — Lime Green">✅ 85A — Lime Green</span><span class="pill in" title="90A — Black">✅ 90A — Black</span><span class="pill in" title="90A — White">✅ 90A — White</span><span class="pill in" title="90A — Quicksilver">✅ 90A — Quicksilver</span><span class="pill in" title="90A — Crystal Blue">✅ 90A — Crystal Blue</span><span class="pill in" title="90A — Grape Jelly">✅ 90A — Grape Jelly</span><span class="pill in" title="90A — Cocoa Brown">✅ 90A — Cocoa Brown</span><span class="pill in" title="90A — Frozen">✅ 90A — Frozen</span><span class="pill in" title="90A — Blaze">✅ 90A — Blaze</span></div>
-        </details>
-    </div>
-</div>
+<div class="columns" id="columns"></div>
 
-<footer>Data scraped from us.store.bambulab.com · Updated daily</footer>
+<footer>
+  <span>Data from <a href="https://us.store.bambulab.com" target="_blank">us.store.bambulab.com</a> · Updated daily</span>
+  <a href="mailto:plazman888@icloud.com">Contact</a>
+</footer>
 
+<script>
+const DATA = {"dates":["3/19/26"],"filaments":{"PLA Basic":{"group":"PLA","url":"https://us.store.bambulab.com/products/pla-basic-filament","colors":{"Jade White":[1],"Orange":[1],"Blue":[1],"Gray":[1],"Beige":[0],"Silver":[0],"Yellow":[1],"Blue Grey":[0],"Pink":[1],"Brown":[1],"Red":[1],"Black":[1],"Bambu Green":[1],"Bronze":[1],"Gold":[0],"Purple":[0],"Magenta":[0],"Cyan":[1],"Mistletoe Green":[1],"Light Gray":[1],"Dark Gray":[0],"Maroon Red":[1],"Sunflower Yellow":[1],"Turquoise":[1],"Indigo Purple":[1],"Bright Green":[0],"Cocoa Brown":[1],"Hot Pink":[0],"Cobalt Blue":[0],"Pumpkin Orange":[1]}},"PLA Matte":{"group":"PLA","url":"https://us.store.bambulab.com/products/pla-matte","colors":{"Matte Ivory White":[1],"Matte Ash Gray":[1],"Matte Mandarin Orange":[1],"Matte Sakura Pink":[0],"Matte Lemon Yellow":[1],"Matte Charcoal":[1],"Matte Grass Green":[1],"Matte Latte Brown":[0],"Matte Scarlet Red":[0],"Matte Ice Blue":[0],"Matte Lilac Purple":[1],"Matte Marine Blue":[1],"Matte Dark Red":[1],"Matte Dark Blue":[0],"Matte Dark Brown":[1],"Matte Dark Green":[1],"Matte Desert Tan":[0],"Matte Bone White":[0],"Matte Plum":[0],"Matte Sky Blue":[0],"Matte Apple Green":[0],"Matte Dark Chocolate":[1],"Matte Caramel":[0],"Matte Terracotta":[0],"Matte Nardo Gray":[1]}},"PETG Basic":{"group":"PETG","url":"https://us.store.bambulab.com/products/petg-basic","colors":{"Black":[1],"White":[1],"Gray":[1],"Red":[1],"Yellow":[1],"Reflex Blue":[1],"Dark Brown":[1]}},"PETG HF":{"group":"PETG","url":"https://us.store.bambulab.com/products/petg-hf","colors":{"Blue":[0],"Red":[0],"Black":[1],"Gray":[0],"White":[0],"Dark Gray":[0],"Cream":[0],"Orange":[0],"Green":[0],"Yellow":[0],"Lime Green":[0],"Forest Green":[0],"Lake Blue":[0],"Peanut Brown":[0]}},"TPU 95A HF":{"group":"TPU","url":"https://us.store.bambulab.com/products/tpu-95a-hf","colors":{"Black":[1],"White":[0],"Gray":[1],"Yellow":[1],"Blue":[1],"Red":[0]}},"TPU for AMS":{"group":"TPU","url":"https://us.store.bambulab.com/products/tpu-for-ams","colors":{"Red":[1],"Yellow":[0],"Blue":[1],"Neon Green":[1],"White":[1],"Gray":[1],"Black":[1]}},"TPU 85A-90A":{"group":"TPU","url":"https://us.store.bambulab.com/products/tpu-85a-tpu-90a","colors":{"85A \u2014 Light Cyan":[1],"85A \u2014 Neon Orange":[1],"85A \u2014 Black":[1],"85A \u2014 Flesh":[1],"85A \u2014 Lime Green":[1],"90A \u2014 Black":[1],"90A \u2014 White":[1],"90A \u2014 Quicksilver":[1],"90A \u2014 Crystal Blue":[1],"90A \u2014 Grape Jelly":[1],"90A \u2014 Cocoa Brown":[1],"90A \u2014 Frozen":[1],"90A \u2014 Blaze":[1]}}}};
+const GROUPS = ["PLA","PETG","TPU"];
+const FILAMENT_NAMES = Object.keys(DATA.filaments);
+
+/* ── Theme ── */
+function toggleTheme() {
+  const html = document.documentElement;
+  const isDark = html.getAttribute("data-theme") === "dark";
+  html.setAttribute("data-theme", isDark ? "light" : "dark");
+  document.getElementById("theme-toggle").textContent = isDark ? "🌙" : "☀️";
+  localStorage.setItem("theme", isDark ? "light" : "dark");
+}
+(function() {
+  const saved = localStorage.getItem("theme");
+  if (saved) {
+    document.documentElement.setAttribute("data-theme", saved);
+    document.getElementById("theme-toggle").textContent = saved === "light" ? "🌙" : "☀️";
+  }
+})();
+
+/* ── Date picker ── */
+function populatePicker() {
+  const sel = document.getElementById("date-picker");
+  const dates = DATA.dates;
+  dates.slice().reverse().forEach((d, i) => {
+    const opt = document.createElement("option");
+    opt.value = d;
+    opt.textContent = d;
+    if (i === 0) opt.selected = true;
+    sel.appendChild(opt);
+  });
+}
+
+/* ── Stats helpers ── */
+function statsForDate(colors, dateIdx) {
+  const vals = Object.values(colors).map(arr => arr[dateIdx] ?? 0);
+  const total = vals.length;
+  const inStk = vals.filter(v => v === 1).length;
+  return { total, inStk, out: total - inStk, pct: total ? Math.round(inStk/total*100) : 0 };
+}
+
+function barColor(pct) {
+  return pct >= 75 ? "#4caf50" : pct >= 40 ? "#ff9800" : "#f44336";
+}
+
+/* ── Chart ── */
+function buildChart(dateIdx) {
+  const CHART_H = 140, BAR_W = 36, GAP = 18, PAD = 8, LABEL_H = 36;
+  const SVG_H = CHART_H + LABEL_H + 10;
+  const names = FILAMENT_NAMES;
+  const maxTotal = Math.max(...names.map(n => Object.keys(DATA.filaments[n].colors).length));
+  const SVG_W = PAD*2 + names.length*BAR_W + (names.length-1)*GAP;
+
+  const shortLabels = ["PLA Basic","PLA Matte","PETG Basic","PETG HF","TPU 95A HF","TPU AMS","TPU 85/90A"];
+  let bars = "", labels = "";
+
+  names.forEach((name, i) => {
+    const {total, inStk, out, pct} = statsForDate(DATA.filaments[name].colors, dateIdx);
+    const x = PAD + i*(BAR_W+GAP);
+    const fullH = Math.round(total/maxTotal*CHART_H);
+    const inH  = Math.round(inStk/total*fullH);
+    const outH = fullH - inH;
+    const yTop = CHART_H - fullH;
+
+    if (outH > 0) bars += `<rect x="${x}" y="${yTop}" width="${BAR_W}" height="${outH}" fill="#c0504d" rx="3"/>`;
+    if (inH  > 0) bars += `<rect x="${x}" y="${yTop+outH}" width="${BAR_W}" height="${inH}" fill="#4472c4" rx="3"/>`;
+
+    const parts = (shortLabels[i]||name).split(" ");
+    const mid = Math.ceil(parts.length/2);
+    const line1 = parts.slice(0,mid).join(" ");
+    const line2 = parts.slice(mid).join(" ");
+    const lx = x + BAR_W/2;
+    labels += `<text x="${lx}" y="${CHART_H+14}" text-anchor="middle" fill="var(--text-dim)" font-size="10" font-family="system-ui">${line1}</text>`;
+    if (line2) labels += `<text x="${lx}" y="${CHART_H+27}" text-anchor="middle" fill="var(--text-dim)" font-size="10" font-family="system-ui">${line2}</text>`;
+  });
+
+  const lx = SVG_W - 130;
+  const legend = `
+    <rect x="${lx}" y="4" width="12" height="12" fill="#4472c4" rx="2"/>
+    <text x="${lx+16}" y="14" fill="var(--text-dim)" font-size="11" font-family="system-ui">In Stock</text>
+    <rect x="${lx+70}" y="4" width="12" height="12" fill="#c0504d" rx="2"/>
+    <text x="${lx+86}" y="14" fill="var(--text-dim)" font-size="11" font-family="system-ui">Out</text>`;
+
+  document.getElementById("chart").innerHTML =
+    `<svg viewBox="0 0 ${SVG_W} ${SVG_H}" width="100%" style="max-width:${SVG_W}px;display:block;margin:0 auto">
+      ${legend}${bars}${labels}
+    </svg>`;
+}
+
+/* ── Columns ── */
+function buildColumns(dateIdx) {
+  const wrap = document.getElementById("columns");
+  wrap.innerHTML = "";
+
+  GROUPS.forEach(group => {
+    const groupFilaments = FILAMENT_NAMES.filter(n => DATA.filaments[n].group === group);
+    const allColors = groupFilaments.flatMap(n => Object.values(DATA.filaments[n].colors).map(arr => arr[dateIdx]??0));
+    const total = allColors.length;
+    const inStk = allColors.filter(v=>v===1).length;
+    const out   = total - inStk;
+    const pct   = total ? Math.round(inStk/total*100) : 0;
+    const bc    = barColor(pct);
+
+    // Sections
+    let sectionsHTML = "";
+    groupFilaments.forEach(name => {
+      const info = DATA.filaments[name];
+      const s = statsForDate(info.colors, dateIdx);
+      const pills = Object.entries(info.colors).map(([color, arr]) => {
+        const inS = (arr[dateIdx]??0) === 1;
+        return `<span class="pill ${inS?'in':'out'}">${inS?'✅':'🚫'} ${color}</span>`;
+      }).join("");
+
+      sectionsHTML += `
+        <details open>
+          <summary>
+            <span class="triangle">&#9658;</span>
+            <span class="section-name">${name}</span>
+            <span class="section-meta">
+              <span class="si">${s.inStk}✅</span>
+              <span class="so">${s.out}🚫</span>
+              <a class="shop-link" href="${info.url}" target="_blank" onclick="event.stopPropagation()">Shop ↗</a>
+            </span>
+          </summary>
+          <div class="pills">${pills}</div>
+        </details>`;
+    });
+
+    const col = document.createElement("div");
+    col.className = "col";
+    col.innerHTML = `
+      <div class="col-header">
+        <div class="col-title">${group}</div>
+        <div class="col-summary">
+          <span class="si">${inStk} in stock</span>
+          <span class="so">${out} out</span>
+          <span class="pct">${pct}%</span>
+        </div>
+        <div class="prog-wrap"><div class="prog-bar" style="width:${pct}%;background:${bc}"></div></div>
+      </div>
+      ${sectionsHTML}`;
+    wrap.appendChild(col);
+  });
+}
+
+/* ── Main render ── */
+function render(dateStr) {
+  const idx = DATA.dates.indexOf(dateStr);
+  if (idx === -1) return;
+  buildChart(idx);
+  buildColumns(idx);
+}
+
+/* ── Init ── */
+populatePicker();
+render(DATA.dates[DATA.dates.length - 1]);
+</script>
 </body>
 </html>

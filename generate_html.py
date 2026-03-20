@@ -1,226 +1,65 @@
 """
-Generates index.html for the Bambu Lab Filament Availability Tracker.
+Reads Bambu_Filament_Tracker.xlsx and generates index.html.
+All historical date columns are embedded as JSON so a date picker
+lets visitors browse past snapshots without a server.
 """
 
-TODAY = "3/19/26"
+import json
+import os
+import openpyxl
 
-FILAMENTS = {
-    "PLA Basic": {
-        "group": "PLA",
-        "url": "https://us.store.bambulab.com/products/pla-basic-filament",
-        "colors": [
-            ("Jade White",      True),  ("Orange",          True),
-            ("Blue",            True),  ("Gray",            True),
-            ("Beige",           False), ("Silver",          False),
-            ("Yellow",          True),  ("Blue Grey",       False),
-            ("Pink",            True),  ("Brown",           True),
-            ("Red",             True),  ("Black",           True),
-            ("Bambu Green",     True),  ("Bronze",          True),
-            ("Gold",            False), ("Purple",          False),
-            ("Magenta",         False), ("Cyan",            True),
-            ("Mistletoe Green", True),  ("Light Gray",      True),
-            ("Dark Gray",       False), ("Maroon Red",      True),
-            ("Sunflower Yellow",True),  ("Turquoise",       True),
-            ("Indigo Purple",   True),  ("Bright Green",    False),
-            ("Cocoa Brown",     True),  ("Hot Pink",        False),
-            ("Cobalt Blue",     False), ("Pumpkin Orange",  True),
-        ],
-    },
-    "PLA Matte": {
-        "group": "PLA",
-        "url": "https://us.store.bambulab.com/products/pla-matte",
-        "colors": [
-            ("Matte Ivory White",    True),  ("Matte Ash Gray",       True),
-            ("Matte Mandarin Orange",True),  ("Matte Sakura Pink",    False),
-            ("Matte Lemon Yellow",   True),  ("Matte Charcoal",       True),
-            ("Matte Grass Green",    True),  ("Matte Latte Brown",    False),
-            ("Matte Scarlet Red",    False), ("Matte Ice Blue",       False),
-            ("Matte Lilac Purple",   True),  ("Matte Marine Blue",    True),
-            ("Matte Dark Red",       True),  ("Matte Dark Blue",      False),
-            ("Matte Dark Brown",     True),  ("Matte Dark Green",     True),
-            ("Matte Desert Tan",     False), ("Matte Bone White",     False),
-            ("Matte Plum",           False), ("Matte Sky Blue",       False),
-            ("Matte Apple Green",    False), ("Matte Dark Chocolate", True),
-            ("Matte Caramel",        False), ("Matte Terracotta",     False),
-            ("Matte Nardo Gray",     True),
-        ],
-    },
-    "PETG Basic": {
-        "group": "PETG",
-        "url": "https://us.store.bambulab.com/products/petg-basic",
-        "colors": [
-            ("Black", True), ("White", True), ("Gray",        True),
-            ("Red",   True), ("Yellow",True), ("Reflex Blue", True),
-            ("Dark Brown", True),
-        ],
-    },
-    "PETG HF": {
-        "group": "PETG",
-        "url": "https://us.store.bambulab.com/products/petg-hf",
-        "colors": [
-            ("Blue",         False), ("Red",           False), ("Black",        True),
-            ("Gray",         False), ("White",          False), ("Dark Gray",    False),
-            ("Cream",        False), ("Orange",         False), ("Green",        False),
-            ("Yellow",       False), ("Lime Green",     False), ("Forest Green", False),
-            ("Lake Blue",    False), ("Peanut Brown",   False),
-        ],
-    },
-    "TPU 95A HF": {
-        "group": "TPU",
-        "url": "https://us.store.bambulab.com/products/tpu-95a-hf",
-        "colors": [
-            ("Black", True), ("White", False), ("Gray",   True),
-            ("Yellow",True), ("Blue",  True),  ("Red",    False),
-        ],
-    },
-    "TPU for AMS": {
-        "group": "TPU",
-        "url": "https://us.store.bambulab.com/products/tpu-for-ams",
-        "colors": [
-            ("Red",       True),  ("Yellow",    False), ("Blue",      True),
-            ("Neon Green",True),  ("White",     True),  ("Gray",      True),
-            ("Black",     True),
-        ],
-    },
-    "TPU 85A-90A": {
-        "group": "TPU",
-        "url": "https://us.store.bambulab.com/products/tpu-85a-tpu-90a",
-        "colors": [
-            ("85A — Light Cyan",   True),  ("85A — Neon Orange",  True),
-            ("85A — Black",        True),  ("85A — Flesh",        True),
-            ("85A — Lime Green",   True),  ("90A — Black",        True),
-            ("90A — White",        True),  ("90A — Quicksilver",  True),
-            ("90A — Crystal Blue", True),  ("90A — Grape Jelly",  True),
-            ("90A — Cocoa Brown",  True),  ("90A — Frozen",       True),
-            ("90A — Blaze",        True),
-        ],
-    },
+XLSX_PATH = "/Users/michaelwhitney/Documents/AI STUFF/HTML files created by Claudette/Bambu_Filament_Tracker.xlsx"
+OUT_PATH  = "/Users/michaelwhitney/Documents/3D PRINTING/bambu-filament-tracker/index.html"
+
+SHEET_META = {
+    "PLA Basic":   {"group": "PLA",  "url": "https://us.store.bambulab.com/products/pla-basic-filament"},
+    "PLA Matte":   {"group": "PLA",  "url": "https://us.store.bambulab.com/products/pla-matte"},
+    "PETG Basic":  {"group": "PETG", "url": "https://us.store.bambulab.com/products/petg-basic"},
+    "PETG HF":     {"group": "PETG", "url": "https://us.store.bambulab.com/products/petg-hf"},
+    "TPU 95A HF":  {"group": "TPU",  "url": "https://us.store.bambulab.com/products/tpu-95a-hf"},
+    "TPU for AMS": {"group": "TPU",  "url": "https://us.store.bambulab.com/products/tpu-for-ams"},
+    "TPU 85A-90A": {"group": "TPU",  "url": "https://us.store.bambulab.com/products/tpu-85a-tpu-90a"},
 }
-
 GROUPS = ["PLA", "PETG", "TPU"]
 
 
-def stats(colors):
-    total  = len(colors)
-    in_stk = sum(1 for _, s in colors if s)
-    out    = total - in_stk
-    pct    = round(in_stk / total * 100) if total else 0
-    return total, in_stk, out, pct
+def read_spreadsheet(path):
+    wb = openpyxl.load_workbook(path, data_only=True)
+
+    # Dates live in the header row (row 2) of any filament sheet, columns C+
+    first_ws = wb["PLA Basic"]
+    header = list(first_ws.iter_rows(min_row=2, max_row=2, values_only=True))[0]
+    dates = [str(h) for h in header[2:] if h is not None]
+
+    filaments = {}
+    for sheet_name, meta in SHEET_META.items():
+        if sheet_name not in wb.sheetnames:
+            continue
+        ws = wb[sheet_name]
+        colors = {}
+        for row in ws.iter_rows(min_row=3, values_only=True):
+            if not row[1]:
+                continue
+            name = str(row[1])
+            statuses = []
+            for i in range(len(dates)):
+                v = row[2 + i] if (2 + i) < len(row) else None
+                statuses.append(1 if v == "✅" else 0)
+            colors[name] = statuses
+        filaments[sheet_name] = {
+            "group": meta["group"],
+            "url":   meta["url"],
+            "colors": colors,
+        }
+
+    return dates, filaments
 
 
-def bar_color(pct):
-    if pct >= 75: return "#4caf50"
-    if pct >= 40: return "#ff9800"
-    return "#f44336"
-
-
-def build_chart():
-    """SVG stacked bar chart — one bar per filament line."""
-    CHART_H   = 140   # px, max bar height
-    BAR_W     = 36
-    GAP       = 18
-    PAD_L     = 8
-    LABEL_H   = 36    # space below bars for labels
-    SVG_H     = CHART_H + LABEL_H + 10
-
-    items = list(FILAMENTS.items())
-    max_total = max(len(info["colors"]) for _, info in items)
-    n = len(items)
-    SVG_W = PAD_L * 2 + n * BAR_W + (n - 1) * GAP
-
-    bars = ""
-    labels = ""
-    short = ["PLA\nBasic", "PLA\nMatte", "PETG\nBasic", "PETG\nHF",
-             "TPU\n95A HF", "TPU\nAMS", "TPU\n85/90A"]
-
-    for i, (name, info) in enumerate(items):
-        total, in_stk, out, pct = stats(info["colors"])
-        x = PAD_L + i * (BAR_W + GAP)
-        full_h = round(total / max_total * CHART_H)
-        in_h   = round(in_stk / total * full_h) if total else 0
-        out_h  = full_h - in_h
-        y_top  = CHART_H - full_h
-
-        # out-of-stock on top (red), in-stock on bottom (blue)
-        if out_h > 0:
-            bars += f'<rect x="{x}" y="{y_top}" width="{BAR_W}" height="{out_h}" fill="#c0504d" rx="3"/>'
-        if in_h > 0:
-            bars += f'<rect x="{x}" y="{y_top + out_h}" width="{BAR_W}" height="{in_h}" fill="#4472c4" rx="3"/>'
-
-        # two-line label
-        lx = x + BAR_W // 2
-        ly = CHART_H + 14
-        parts = short[i].split("\n")
-        labels += f'<text x="{lx}" y="{ly}" text-anchor="middle" fill="#9ca3af" font-size="10" font-family="system-ui">{parts[0]}</text>'
-        if len(parts) > 1:
-            labels += f'<text x="{lx}" y="{ly + 13}" text-anchor="middle" fill="#9ca3af" font-size="10" font-family="system-ui">{parts[1]}</text>'
-
-    legend = f'''
-      <rect x="{SVG_W - 130}" y="4" width="12" height="12" fill="#4472c4" rx="2"/>
-      <text x="{SVG_W - 114}" y="14" fill="#9ca3af" font-size="11" font-family="system-ui">In Stock</text>
-      <rect x="{SVG_W - 60}" y="4" width="12" height="12" fill="#c0504d" rx="2"/>
-      <text x="{SVG_W - 44}" y="14" fill="#9ca3af" font-size="11" font-family="system-ui">Out</text>'''
-
-    return f'''<svg viewBox="0 0 {SVG_W} {SVG_H}" width="100%" style="max-width:{SVG_W}px;display:block;margin:0 auto">
-      {legend}
-      {bars}
-      {labels}
-    </svg>'''
-
-
-def build_column(group_name):
-    group_filaments = {k: v for k, v in FILAMENTS.items() if v["group"] == group_name}
-
-    # Aggregate stats for the column header
-    all_colors = [c for info in group_filaments.values() for c in info["colors"]]
-    total, in_stk, out, pct = stats(all_colors)
-    bc = bar_color(pct)
-
-    sections = ""
-    for name, info in group_filaments.items():
-        t, ins, ot, p = stats(info["colors"])
-        pills = "".join(
-            f'<span class="pill {"in" if s else "out"}" title="{c}">{"✅" if s else "🚫"} {c}</span>'
-            for c, s in info["colors"]
-        )
-        sections += f'''
-        <details open>
-          <summary>
-            <span class="section-name">{name}</span>
-            <span class="section-meta">
-              <span class="si">{ins}✅</span>
-              <span class="so">{ot}🚫</span>
-              <a class="shop-link" href="{info['url']}" target="_blank" onclick="event.stopPropagation()">Shop ↗</a>
-            </span>
-          </summary>
-          <div class="pills">{pills}</div>
-        </details>'''
-
-    return f'''
-    <div class="col">
-      <div class="col-header">
-        <div class="col-title">{group_name}</div>
-        <div class="col-summary">
-          <span class="si">{in_stk} in stock</span>
-          <span class="so">{out} out</span>
-          <span class="pct">{pct}%</span>
-        </div>
-        <div class="prog-wrap"><div class="prog-bar" style="width:{pct}%;background:{bc}"></div></div>
-      </div>
-      {sections}
-    </div>'''
-
-
-def build_html():
-    chart  = build_chart()
-    cols   = "".join(build_column(g) for g in GROUPS)
-
-    # Overall totals for the header
-    all_c  = [c for info in FILAMENTS.values() for c in info["colors"]]
-    _, ins, out, pct = stats(all_c)
+def build_html(dates, filaments):
+    payload = json.dumps({"dates": dates, "filaments": filaments}, separators=(",", ":"))
 
     return f"""<!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -228,40 +67,113 @@ def build_html():
   <style>
     *, *::before, *::after {{ box-sizing: border-box; margin: 0; padding: 0; }}
 
+    /* ── Tokens ── */
+    :root {{
+      --bg:          #111827;
+      --surface:     #1f2937;
+      --surface2:    #263244;
+      --border:      #374151;
+      --text:        #e5e7eb;
+      --text-muted:  #9ca3af;
+      --text-dim:    #6b7280;
+      --in-bg:       #14532d;
+      --in-fg:       #bbf7d0;
+      --out-bg:      #450a0a;
+      --out-fg:      #fca5a5;
+      --in-stat:     #4ade80;
+      --out-stat:    #f87171;
+      --accent:      #3b82f6;
+    }}
+    [data-theme="light"] {{
+      --bg:          #f3f4f6;
+      --surface:     #ffffff;
+      --surface2:    #f9fafb;
+      --border:      #d1d5db;
+      --text:        #111827;
+      --text-muted:  #4b5563;
+      --text-dim:    #9ca3af;
+      --in-bg:       #dcfce7;
+      --in-fg:       #166534;
+      --out-bg:      #fee2e2;
+      --out-fg:      #991b1b;
+      --in-stat:     #16a34a;
+      --out-stat:    #dc2626;
+      --accent:      #2563eb;
+    }}
+
     body {{
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #111827;
-      color: #e5e7eb;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      transition: background .2s, color .2s;
     }}
 
     /* ── Header ── */
     header {{
-      background: #1f2937;
-      border-bottom: 1px solid #374151;
-      padding: 1rem 1.5rem;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: .85rem 1.25rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
       flex-wrap: wrap;
-      gap: .5rem;
+      gap: .6rem;
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }}
-    header h1 {{ font-size: 1.1rem; font-weight: 700; color: #f9fafb; }}
-    .header-meta {{ font-size: .78rem; color: #6b7280; text-align: right; }}
-    .header-meta strong {{ color: #9ca3af; }}
+    header h1 {{
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text);
+      white-space: nowrap;
+    }}
+    .controls {{
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      flex-wrap: wrap;
+    }}
+    .date-label {{
+      font-size: .78rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }}
+    #date-picker {{
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: .3rem .55rem;
+      font-size: .82rem;
+      cursor: pointer;
+    }}
+    #theme-toggle {{
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: .3rem .6rem;
+      font-size: .9rem;
+      cursor: pointer;
+      color: var(--text);
+      line-height: 1;
+    }}
+    #theme-toggle:hover {{ background: var(--surface2); }}
 
     /* ── Chart ── */
     .chart-wrap {{
-      background: #1f2937;
-      border-bottom: 1px solid #374151;
-      padding: 1.25rem 1.5rem 1rem;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 1.5rem .85rem;
     }}
     .chart-title {{
-      font-size: .78rem;
+      font-size: .72rem;
       font-weight: 600;
-      color: #6b7280;
+      color: var(--text-dim);
       text-transform: uppercase;
-      letter-spacing: .06em;
-      margin-bottom: .75rem;
+      letter-spacing: .07em;
+      margin-bottom: .6rem;
     }}
 
     /* ── Columns ── */
@@ -274,123 +186,127 @@ def build_html():
       margin: 0 auto;
     }}
 
-    /* ── Column header ── */
+    /* ── Column card ── */
     .col-header {{
-      background: #1f2937;
-      border: 1px solid #374151;
+      background: var(--surface);
+      border: 1px solid var(--border);
       border-radius: 10px 10px 0 0;
-      padding: .9rem 1rem .75rem;
+      padding: .85rem 1rem .7rem;
       margin-bottom: 2px;
     }}
     .col-title {{
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 700;
-      color: #f9fafb;
-      margin-bottom: .35rem;
+      color: var(--text);
+      margin-bottom: .3rem;
     }}
     .col-summary {{
       display: flex;
-      gap: .75rem;
+      gap: .7rem;
       font-size: .8rem;
       font-weight: 600;
-      margin-bottom: .5rem;
+      margin-bottom: .45rem;
     }}
     .prog-wrap {{
       height: 5px;
-      background: #374151;
+      background: var(--border);
       border-radius: 99px;
       overflow: hidden;
     }}
     .prog-bar {{
       height: 100%;
       border-radius: 99px;
+      transition: width .3s;
     }}
 
     /* ── Collapsible sections ── */
     details {{
-      background: #1f2937;
-      border: 1px solid #374151;
+      background: var(--surface);
+      border: 1px solid var(--border);
       border-top: none;
-      overflow: hidden;
     }}
     details:last-child {{ border-radius: 0 0 10px 10px; }}
-
     summary {{
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      padding: .6rem 1rem;
+      gap: .5rem;
+      padding: .55rem 1rem;
       cursor: pointer;
       user-select: none;
       list-style: none;
-      gap: .5rem;
     }}
     summary::-webkit-details-marker {{ display: none; }}
-    summary::before {{
-      content: "▸";
-      color: #4b5563;
-      font-size: .75rem;
+    .triangle {{
+      font-size: 1.1rem;
+      color: var(--text-dim);
       transition: transform .2s;
       flex-shrink: 0;
+      display: inline-block;
+      line-height: 1;
     }}
-    details[open] > summary::before {{ transform: rotate(90deg); }}
-    summary:hover {{ background: #263244; }}
+    details[open] .triangle {{ transform: rotate(90deg); }}
+    summary:hover {{ background: var(--surface2); }}
 
     .section-name {{
       font-size: .88rem;
       font-weight: 600;
-      color: #e5e7eb;
+      color: var(--text);
       flex: 1;
     }}
     .section-meta {{
       display: flex;
       align-items: center;
-      gap: .5rem;
+      gap: .45rem;
       font-size: .75rem;
+      font-weight: 600;
     }}
     .shop-link {{
-      color: #4b5563;
+      color: var(--text-dim);
       text-decoration: none;
+      font-weight: 400;
       font-size: .72rem;
     }}
-    .shop-link:hover {{ color: #9ca3af; }}
+    .shop-link:hover {{ color: var(--text-muted); }}
 
-    /* ── Stats colors ── */
-    .si  {{ color: #4ade80; }}
-    .so  {{ color: #f87171; }}
-    .pct {{ color: #9ca3af; }}
+    /* ── Stat colors ── */
+    .si  {{ color: var(--in-stat); }}
+    .so  {{ color: var(--out-stat); }}
+    .pct {{ color: var(--text-muted); }}
 
     /* ── Pills ── */
     .pills {{
       display: flex;
       flex-wrap: wrap;
-      gap: .3rem;
-      padding: .6rem 1rem .75rem;
+      gap: .28rem;
+      padding: .55rem 1rem .7rem;
     }}
     .pill {{
       font-size: .7rem;
-      padding: .2rem .45rem;
+      padding: .18rem .42rem;
       border-radius: 99px;
       white-space: nowrap;
     }}
-    .pill.in  {{ background: #14532d; color: #bbf7d0; }}
-    .pill.out {{ background: #450a0a; color: #fca5a5; }}
+    .pill.in  {{ background: var(--in-bg);  color: var(--in-fg); }}
+    .pill.out {{ background: var(--out-bg); color: var(--out-fg); }}
 
     /* ── Footer ── */
     footer {{
       text-align: center;
       padding: 2rem 1rem;
-      font-size: .72rem;
-      color: #374151;
+      font-size: .75rem;
+      color: var(--text-dim);
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
     }}
+    footer a {{ color: var(--text-muted); text-decoration: none; }}
+    footer a:hover {{ color: var(--text); }}
 
-    /* ── Mobile: single column ── */
+    /* ── Mobile ── */
     @media (max-width: 700px) {{
-      .columns {{
-        grid-template-columns: 1fr;
-        padding: .75rem;
-      }}
-      header h1 {{ font-size: 1rem; }}
+      .columns {{ grid-template-columns: 1fr; padding: .75rem; }}
+      header h1 {{ font-size: .95rem; }}
     }}
   </style>
 </head>
@@ -398,31 +314,193 @@ def build_html():
 
 <header>
   <h1>🧵 Bambu Lab Filament Availability</h1>
-  <div class="header-meta">
-    <strong>{ins}</strong> in stock &nbsp;·&nbsp; <strong>{out}</strong> out
-    &nbsp;·&nbsp; Updated {TODAY}
+  <div class="controls">
+    <span class="date-label">Showing:</span>
+    <select id="date-picker" onchange="render(this.value)"></select>
+    <button id="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark mode">☀️</button>
   </div>
 </header>
 
 <div class="chart-wrap">
   <div class="chart-title">Colors by Filament Line</div>
-  {chart}
+  <div id="chart"></div>
 </div>
 
-<div class="columns">
-  {cols}
-</div>
+<div class="columns" id="columns"></div>
 
-<footer>Data scraped from us.store.bambulab.com · Updated daily</footer>
+<footer>
+  <span>Data from <a href="https://us.store.bambulab.com" target="_blank">us.store.bambulab.com</a> · Updated daily</span>
+  <a href="mailto:plazman888@icloud.com">Contact</a>
+</footer>
 
+<script>
+const DATA = {payload};
+const GROUPS = ["PLA","PETG","TPU"];
+const FILAMENT_NAMES = Object.keys(DATA.filaments);
+
+/* ── Theme ── */
+function toggleTheme() {{
+  const html = document.documentElement;
+  const isDark = html.getAttribute("data-theme") === "dark";
+  html.setAttribute("data-theme", isDark ? "light" : "dark");
+  document.getElementById("theme-toggle").textContent = isDark ? "🌙" : "☀️";
+  localStorage.setItem("theme", isDark ? "light" : "dark");
+}}
+(function() {{
+  const saved = localStorage.getItem("theme");
+  if (saved) {{
+    document.documentElement.setAttribute("data-theme", saved);
+    document.getElementById("theme-toggle").textContent = saved === "light" ? "🌙" : "☀️";
+  }}
+}})();
+
+/* ── Date picker ── */
+function populatePicker() {{
+  const sel = document.getElementById("date-picker");
+  const dates = DATA.dates;
+  dates.slice().reverse().forEach((d, i) => {{
+    const opt = document.createElement("option");
+    opt.value = d;
+    opt.textContent = d;
+    if (i === 0) opt.selected = true;
+    sel.appendChild(opt);
+  }});
+}}
+
+/* ── Stats helpers ── */
+function statsForDate(colors, dateIdx) {{
+  const vals = Object.values(colors).map(arr => arr[dateIdx] ?? 0);
+  const total = vals.length;
+  const inStk = vals.filter(v => v === 1).length;
+  return {{ total, inStk, out: total - inStk, pct: total ? Math.round(inStk/total*100) : 0 }};
+}}
+
+function barColor(pct) {{
+  return pct >= 75 ? "#4caf50" : pct >= 40 ? "#ff9800" : "#f44336";
+}}
+
+/* ── Chart ── */
+function buildChart(dateIdx) {{
+  const CHART_H = 140, BAR_W = 36, GAP = 18, PAD = 8, LABEL_H = 36;
+  const SVG_H = CHART_H + LABEL_H + 10;
+  const names = FILAMENT_NAMES;
+  const maxTotal = Math.max(...names.map(n => Object.keys(DATA.filaments[n].colors).length));
+  const SVG_W = PAD*2 + names.length*BAR_W + (names.length-1)*GAP;
+
+  const shortLabels = ["PLA Basic","PLA Matte","PETG Basic","PETG HF","TPU 95A HF","TPU AMS","TPU 85/90A"];
+  let bars = "", labels = "";
+
+  names.forEach((name, i) => {{
+    const {{total, inStk, out, pct}} = statsForDate(DATA.filaments[name].colors, dateIdx);
+    const x = PAD + i*(BAR_W+GAP);
+    const fullH = Math.round(total/maxTotal*CHART_H);
+    const inH  = Math.round(inStk/total*fullH);
+    const outH = fullH - inH;
+    const yTop = CHART_H - fullH;
+
+    if (outH > 0) bars += `<rect x="${{x}}" y="${{yTop}}" width="${{BAR_W}}" height="${{outH}}" fill="#c0504d" rx="3"/>`;
+    if (inH  > 0) bars += `<rect x="${{x}}" y="${{yTop+outH}}" width="${{BAR_W}}" height="${{inH}}" fill="#4472c4" rx="3"/>`;
+
+    const parts = (shortLabels[i]||name).split(" ");
+    const mid = Math.ceil(parts.length/2);
+    const line1 = parts.slice(0,mid).join(" ");
+    const line2 = parts.slice(mid).join(" ");
+    const lx = x + BAR_W/2;
+    labels += `<text x="${{lx}}" y="${{CHART_H+14}}" text-anchor="middle" fill="var(--text-dim)" font-size="10" font-family="system-ui">${{line1}}</text>`;
+    if (line2) labels += `<text x="${{lx}}" y="${{CHART_H+27}}" text-anchor="middle" fill="var(--text-dim)" font-size="10" font-family="system-ui">${{line2}}</text>`;
+  }});
+
+  const lx = SVG_W - 130;
+  const legend = `
+    <rect x="${{lx}}" y="4" width="12" height="12" fill="#4472c4" rx="2"/>
+    <text x="${{lx+16}}" y="14" fill="var(--text-dim)" font-size="11" font-family="system-ui">In Stock</text>
+    <rect x="${{lx+70}}" y="4" width="12" height="12" fill="#c0504d" rx="2"/>
+    <text x="${{lx+86}}" y="14" fill="var(--text-dim)" font-size="11" font-family="system-ui">Out</text>`;
+
+  document.getElementById("chart").innerHTML =
+    `<svg viewBox="0 0 ${{SVG_W}} ${{SVG_H}}" width="100%" style="max-width:${{SVG_W}}px;display:block;margin:0 auto">
+      ${{legend}}${{bars}}${{labels}}
+    </svg>`;
+}}
+
+/* ── Columns ── */
+function buildColumns(dateIdx) {{
+  const wrap = document.getElementById("columns");
+  wrap.innerHTML = "";
+
+  GROUPS.forEach(group => {{
+    const groupFilaments = FILAMENT_NAMES.filter(n => DATA.filaments[n].group === group);
+    const allColors = groupFilaments.flatMap(n => Object.values(DATA.filaments[n].colors).map(arr => arr[dateIdx]??0));
+    const total = allColors.length;
+    const inStk = allColors.filter(v=>v===1).length;
+    const out   = total - inStk;
+    const pct   = total ? Math.round(inStk/total*100) : 0;
+    const bc    = barColor(pct);
+
+    // Sections
+    let sectionsHTML = "";
+    groupFilaments.forEach(name => {{
+      const info = DATA.filaments[name];
+      const s = statsForDate(info.colors, dateIdx);
+      const pills = Object.entries(info.colors).map(([color, arr]) => {{
+        const inS = (arr[dateIdx]??0) === 1;
+        return `<span class="pill ${{inS?'in':'out'}}">${{inS?'✅':'🚫'}} ${{color}}</span>`;
+      }}).join("");
+
+      sectionsHTML += `
+        <details open>
+          <summary>
+            <span class="triangle">&#9658;</span>
+            <span class="section-name">${{name}}</span>
+            <span class="section-meta">
+              <span class="si">${{s.inStk}}✅</span>
+              <span class="so">${{s.out}}🚫</span>
+              <a class="shop-link" href="${{info.url}}" target="_blank" onclick="event.stopPropagation()">Shop ↗</a>
+            </span>
+          </summary>
+          <div class="pills">${{pills}}</div>
+        </details>`;
+    }});
+
+    const col = document.createElement("div");
+    col.className = "col";
+    col.innerHTML = `
+      <div class="col-header">
+        <div class="col-title">${{group}}</div>
+        <div class="col-summary">
+          <span class="si">${{inStk}} in stock</span>
+          <span class="so">${{out}} out</span>
+          <span class="pct">${{pct}}%</span>
+        </div>
+        <div class="prog-wrap"><div class="prog-bar" style="width:${{pct}}%;background:${{bc}}"></div></div>
+      </div>
+      ${{sectionsHTML}}`;
+    wrap.appendChild(col);
+  }});
+}}
+
+/* ── Main render ── */
+function render(dateStr) {{
+  const idx = DATA.dates.indexOf(dateStr);
+  if (idx === -1) return;
+  buildChart(idx);
+  buildColumns(idx);
+}}
+
+/* ── Init ── */
+populatePicker();
+render(DATA.dates[DATA.dates.length - 1]);
+</script>
 </body>
 </html>"""
 
 
 if __name__ == "__main__":
-    import os
-    out = "/Users/michaelwhitney/Documents/3D PRINTING/bambu-filament-tracker/index.html"
-    os.makedirs(os.path.dirname(out), exist_ok=True)
-    with open(out, "w") as f:
-        f.write(build_html())
-    print("Generated:", out)
+    print("Reading:", XLSX_PATH)
+    dates, filaments = read_spreadsheet(XLSX_PATH)
+    print(f"Found {len(dates)} date(s):", dates)
+    html = build_html(dates, filaments)
+    os.makedirs(os.path.dirname(OUT_PATH), exist_ok=True)
+    with open(OUT_PATH, "w") as f:
+        f.write(html)
+    print("Generated:", OUT_PATH)
