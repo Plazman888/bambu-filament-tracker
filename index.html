@@ -144,7 +144,7 @@
 
     footer {
       text-align: center; padding: 2rem 1rem; font-size: .75rem; color: var(--text-dim);
-      display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap;
+      display: flex; flex-direction: column; align-items: center; gap: .3rem;
     }
     footer a { color: var(--text-muted); text-decoration: none; }
     footer a:hover { color: var(--text); }
@@ -178,7 +178,7 @@
 
 <footer>
   <span>Data from <a href="https://us.store.bambulab.com" target="_blank">us.store.bambulab.com</a> · Updated daily</span>
-  <a href="mailto:plazman888@icloud.com">©2026 Plazman</a>
+  <span>Last update: <span id="footer-date"></span> &nbsp;·&nbsp; <a href="mailto:plazman888@icloud.com">©2026 Plazman</a></span>
 </footer>
 
 <script>
@@ -409,6 +409,7 @@ function render(dateStr) {
 /* ── Init ── */
 populatePicker();
 render(DATA.dates[DATA.dates.length - 1]);
+document.getElementById("footer-date").textContent = DATA.dates[DATA.dates.length - 1];
 </script>
 </body>
 </html>
