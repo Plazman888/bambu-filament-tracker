@@ -59,7 +59,7 @@ def build_html(dates, filaments):
     payload = json.dumps({"dates": dates, "filaments": filaments}, separators=(",", ":"))
 
     return f"""<!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -68,7 +68,25 @@ def build_html(dates, filaments):
     *, *::before, *::after {{ box-sizing: border-box; margin: 0; padding: 0; }}
 
     /* ── Tokens ── */
+    /* Light mode (default) — clean white */
     :root {{
+      --bg:          #ffffff;
+      --surface:     #f9fafb;
+      --surface2:    #f3f4f6;
+      --border:      #e5e7eb;
+      --text:        #111827;
+      --text-muted:  #4b5563;
+      --text-dim:    #9ca3af;
+      --in-bg:       #dcfce7;
+      --in-fg:       #166534;
+      --out-bg:      #fee2e2;
+      --out-fg:      #991b1b;
+      --in-stat:     #16a34a;
+      --out-stat:    #dc2626;
+      --accent:      #2563eb;
+    }}
+    /* Dark mode */
+    [data-theme="dark"] {{
       --bg:          #111827;
       --surface:     #1f2937;
       --surface2:    #263244;
@@ -83,22 +101,6 @@ def build_html(dates, filaments):
       --in-stat:     #4ade80;
       --out-stat:    #f87171;
       --accent:      #3b82f6;
-    }}
-    [data-theme="light"] {{
-      --bg:          #f3f4f6;
-      --surface:     #ffffff;
-      --surface2:    #f9fafb;
-      --border:      #d1d5db;
-      --text:        #111827;
-      --text-muted:  #4b5563;
-      --text-dim:    #9ca3af;
-      --in-bg:       #dcfce7;
-      --in-fg:       #166534;
-      --out-bg:      #fee2e2;
-      --out-fg:      #991b1b;
-      --in-stat:     #16a34a;
-      --out-stat:    #dc2626;
-      --accent:      #2563eb;
     }}
 
     body {{
@@ -350,7 +352,10 @@ function toggleTheme() {{
   const saved = localStorage.getItem("theme");
   if (saved) {{
     document.documentElement.setAttribute("data-theme", saved);
-    document.getElementById("theme-toggle").textContent = saved === "light" ? "🌙" : "☀️";
+    document.getElementById("theme-toggle").textContent = saved === "dark" ? "☀️" : "🌙";
+  }} else {{
+    /* default is light, so show moon to offer dark */
+    document.getElementById("theme-toggle").textContent = "🌙";
   }}
 }})();
 
