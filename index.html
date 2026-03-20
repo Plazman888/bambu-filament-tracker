@@ -7,245 +7,147 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    /* ── Tokens ── */
-    /* Light mode (default) — clean white */
     :root {
-      --bg:          #ffffff;
-      --surface:     #f9fafb;
-      --surface2:    #f3f4f6;
-      --border:      #e5e7eb;
-      --text:        #111827;
-      --text-muted:  #4b5563;
-      --text-dim:    #9ca3af;
-      --in-bg:       #dcfce7;
-      --in-fg:       #166534;
-      --out-bg:      #fee2e2;
-      --out-fg:      #991b1b;
-      --in-stat:     #16a34a;
-      --out-stat:    #dc2626;
-      --accent:      #2563eb;
+      --bg:         #ffffff;
+      --surface:    #f9fafb;
+      --surface2:   #f3f4f6;
+      --border:     #e5e7eb;
+      --text:       #111827;
+      --text-muted: #4b5563;
+      --text-dim:   #9ca3af;
+      --in-bg:      #dcfce7;
+      --in-fg:      #166534;
+      --out-bg:     #fee2e2;
+      --out-fg:     #991b1b;
+      --in-stat:    #16a34a;
+      --out-stat:   #dc2626;
+      --accent:     #2563eb;
     }
-    /* Dark mode */
     [data-theme="dark"] {
-      --bg:          #111827;
-      --surface:     #1f2937;
-      --surface2:    #263244;
-      --border:      #374151;
-      --text:        #e5e7eb;
-      --text-muted:  #9ca3af;
-      --text-dim:    #6b7280;
-      --in-bg:       #14532d;
-      --in-fg:       #bbf7d0;
-      --out-bg:      #450a0a;
-      --out-fg:      #fca5a5;
-      --in-stat:     #4ade80;
-      --out-stat:    #f87171;
-      --accent:      #3b82f6;
+      --bg:         #111827;
+      --surface:    #1f2937;
+      --surface2:   #263244;
+      --border:     #374151;
+      --text:       #e5e7eb;
+      --text-muted: #9ca3af;
+      --text-dim:   #6b7280;
+      --in-bg:      #14532d;
+      --in-fg:      #bbf7d0;
+      --out-bg:     #450a0a;
+      --out-fg:     #fca5a5;
+      --in-stat:    #4ade80;
+      --out-stat:   #f87171;
+      --accent:     #3b82f6;
     }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      transition: background .2s, color .2s;
+      background: var(--bg); color: var(--text);
+      min-height: 100vh; transition: background .2s, color .2s;
     }
 
-    /* ── Header ── */
     header {
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      padding: .85rem 1.25rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: .6rem;
-      position: sticky;
-      top: 0;
-      z-index: 10;
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: .85rem 1.25rem; display: flex; align-items: center;
+      justify-content: space-between; flex-wrap: wrap; gap: .6rem;
+      position: sticky; top: 0; z-index: 10;
     }
-    header h1 {
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: var(--text);
-      white-space: nowrap;
-    }
-    .controls {
-      display: flex;
-      align-items: center;
-      gap: .6rem;
-      flex-wrap: wrap;
-    }
-    .date-label {
-      font-size: .78rem;
-      color: var(--text-muted);
-      white-space: nowrap;
-    }
+    header h1 { font-size: 1.05rem; font-weight: 700; white-space: nowrap; }
+    .controls { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; }
+    .date-label { font-size: .78rem; color: var(--text-muted); white-space: nowrap; }
     #date-picker {
-      background: var(--bg);
-      color: var(--text);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: .3rem .55rem;
-      font-size: .82rem;
-      cursor: pointer;
+      background: var(--bg); color: var(--text); border: 1px solid var(--border);
+      border-radius: 6px; padding: .3rem .55rem; font-size: .82rem; cursor: pointer;
     }
-    #theme-toggle {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: .3rem .6rem;
-      font-size: .9rem;
-      cursor: pointer;
-      color: var(--text);
-      line-height: 1;
+    .icon-btn {
+      background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
+      padding: .28rem .5rem; font-size: .9rem; cursor: pointer; color: var(--text);
+      line-height: 1; display: flex; align-items: center; justify-content: center;
+      transition: background .15s, opacity .15s;
     }
-    #theme-toggle:hover { background: var(--surface2); }
+    .icon-btn:hover { background: var(--surface2); }
+    #color-toggle .wheel {
+      width: 18px; height: 18px; border-radius: 50%;
+      background: conic-gradient(#ff0000,#ffaa00,#ffff00,#00cc00,#00ccff,#0055ff,#cc00ff,#ff0000);
+      display: block; transition: opacity .2s;
+    }
+    #color-toggle.off .wheel { opacity: .35; filter: grayscale(.6); }
 
-    /* ── Chart ── */
     .chart-wrap {
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
+      background: var(--surface); border-bottom: 1px solid var(--border);
       padding: 1rem 1.5rem .85rem;
     }
     .chart-title {
-      font-size: .72rem;
-      font-weight: 600;
-      color: var(--text-dim);
-      text-transform: uppercase;
-      letter-spacing: .07em;
-      margin-bottom: .6rem;
+      font-size: .72rem; font-weight: 600; color: var(--text-dim);
+      text-transform: uppercase; letter-spacing: .07em; margin-bottom: .6rem;
     }
 
-    /* ── Columns ── */
     .columns {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1rem;
-      padding: 1rem;
-      max-width: 1200px;
-      margin: 0 auto;
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 1rem; padding: 1rem; max-width: 1200px; margin: 0 auto;
     }
-
-    /* ── Column card ── */
     .col-header {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 10px 10px 0 0;
-      padding: .85rem 1rem .7rem;
-      margin-bottom: 2px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px 10px 0 0; padding: .85rem 1rem .7rem; margin-bottom: 2px;
     }
-    .col-title {
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: .3rem;
-    }
+    .col-title { font-size: 1.05rem; font-weight: 700; margin-bottom: .3rem; }
     .col-summary {
-      display: flex;
-      gap: .7rem;
-      font-size: .8rem;
-      font-weight: 600;
-      margin-bottom: .45rem;
+      display: flex; gap: .7rem; font-size: .8rem; font-weight: 600; margin-bottom: .45rem;
     }
-    .prog-wrap {
-      height: 5px;
-      background: var(--border);
-      border-radius: 99px;
-      overflow: hidden;
-    }
-    .prog-bar {
-      height: 100%;
-      border-radius: 99px;
-      transition: width .3s;
-    }
+    .prog-wrap { height: 5px; background: var(--border); border-radius: 99px; overflow: hidden; }
+    .prog-bar  { height: 100%; border-radius: 99px; transition: width .3s; }
 
-    /* ── Collapsible sections ── */
     details {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-top: none;
+      background: var(--surface); border: 1px solid var(--border); border-top: none;
     }
     details:last-child { border-radius: 0 0 10px 10px; }
     summary {
-      display: flex;
-      align-items: center;
-      gap: .5rem;
-      padding: .55rem 1rem;
-      cursor: pointer;
-      user-select: none;
-      list-style: none;
+      display: flex; align-items: center; gap: .5rem;
+      padding: .55rem 1rem; cursor: pointer; user-select: none; list-style: none;
     }
     summary::-webkit-details-marker { display: none; }
     .triangle {
-      font-size: 1.1rem;
-      color: var(--text-dim);
-      transition: transform .2s;
-      flex-shrink: 0;
-      display: inline-block;
-      line-height: 1;
+      font-size: 1.1rem; color: var(--text-dim); transition: transform .2s;
+      flex-shrink: 0; display: inline-block; line-height: 1;
     }
     details[open] .triangle { transform: rotate(90deg); }
     summary:hover { background: var(--surface2); }
-
-    .section-name {
-      font-size: .88rem;
-      font-weight: 600;
-      color: var(--text);
-      flex: 1;
-    }
-    .section-meta {
-      display: flex;
-      align-items: center;
-      gap: .45rem;
-      font-size: .75rem;
-      font-weight: 600;
-    }
-    .shop-link {
-      color: var(--text-dim);
-      text-decoration: none;
-      font-weight: 400;
-      font-size: .72rem;
-    }
+    .section-name { font-size: .88rem; font-weight: 600; flex: 1; }
+    .section-meta { display: flex; align-items: center; gap: .45rem; font-size: .75rem; font-weight: 600; }
+    .shop-link { color: var(--text-dim); text-decoration: none; font-weight: 400; font-size: .72rem; }
     .shop-link:hover { color: var(--text-muted); }
-
-    /* ── Stat colors ── */
     .si  { color: var(--in-stat); }
     .so  { color: var(--out-stat); }
     .pct { color: var(--text-muted); }
 
-    /* ── Pills ── */
-    .pills {
-      display: flex;
-      flex-wrap: wrap;
-      gap: .28rem;
-      padding: .55rem 1rem .7rem;
+    /* Stat badges in summary — clickable */
+    .sort-btn {
+      cursor: pointer; background: none; border: none; padding: 0;
+      font: inherit; font-size: .75rem; font-weight: 600;
+      display: inline-flex; align-items: center; gap: .15rem;
+      border-radius: 4px; padding: .05rem .2rem;
+      transition: background .15s;
     }
+    .sort-btn.si { color: var(--in-stat); }
+    .sort-btn.so { color: var(--out-stat); }
+    .sort-btn:hover { background: var(--surface2); }
+    .sort-btn.active { text-decoration: underline; text-underline-offset: 2px; }
+
+    .pills { display: flex; flex-wrap: wrap; gap: .28rem; padding: .55rem 1rem .7rem; }
     .pill {
-      font-size: .7rem;
-      padding: .18rem .42rem;
-      border-radius: 99px;
-      white-space: nowrap;
+      font-size: .7rem; padding: .18rem .42rem; border-radius: 99px;
+      white-space: nowrap; transition: background .2s, color .2s;
     }
     .pill.in  { background: var(--in-bg);  color: var(--in-fg); }
     .pill.out { background: var(--out-bg); color: var(--out-fg); }
 
-    /* ── Footer ── */
     footer {
-      text-align: center;
-      padding: 2rem 1rem;
-      font-size: .75rem;
-      color: var(--text-dim);
-      display: flex;
-      justify-content: center;
-      gap: 1.5rem;
-      flex-wrap: wrap;
+      text-align: center; padding: 2rem 1rem; font-size: .75rem; color: var(--text-dim);
+      display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap;
     }
     footer a { color: var(--text-muted); text-decoration: none; }
     footer a:hover { color: var(--text); }
 
-    /* ── Mobile ── */
     @media (max-width: 700px) {
       .columns { grid-template-columns: 1fr; padding: .75rem; }
       header h1 { font-size: .95rem; }
@@ -259,7 +161,10 @@
   <div class="controls">
     <span class="date-label">Showing:</span>
     <select id="date-picker" onchange="render(this.value)"></select>
-    <button id="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark mode">☀️</button>
+    <button id="color-toggle" class="icon-btn off" onclick="toggleColorMode()" title="Toggle actual filament colors">
+      <span class="wheel"></span>
+    </button>
+    <button id="theme-toggle" class="icon-btn" onclick="toggleTheme()" title="Toggle light/dark mode">🌙</button>
   </div>
 </header>
 
@@ -276,143 +181,198 @@
 </footer>
 
 <script>
-const DATA = {"dates":["3/19/26"],"filaments":{"PLA Basic":{"group":"PLA","url":"https://us.store.bambulab.com/products/pla-basic-filament","colors":{"Jade White":[1],"Orange":[1],"Blue":[1],"Gray":[1],"Beige":[0],"Silver":[0],"Yellow":[1],"Blue Grey":[0],"Pink":[1],"Brown":[1],"Red":[1],"Black":[1],"Bambu Green":[1],"Bronze":[1],"Gold":[0],"Purple":[0],"Magenta":[0],"Cyan":[1],"Mistletoe Green":[1],"Light Gray":[1],"Dark Gray":[0],"Maroon Red":[1],"Sunflower Yellow":[1],"Turquoise":[1],"Indigo Purple":[1],"Bright Green":[0],"Cocoa Brown":[1],"Hot Pink":[0],"Cobalt Blue":[0],"Pumpkin Orange":[1]}},"PLA Matte":{"group":"PLA","url":"https://us.store.bambulab.com/products/pla-matte","colors":{"Matte Ivory White":[1],"Matte Ash Gray":[1],"Matte Mandarin Orange":[1],"Matte Sakura Pink":[0],"Matte Lemon Yellow":[1],"Matte Charcoal":[1],"Matte Grass Green":[1],"Matte Latte Brown":[0],"Matte Scarlet Red":[0],"Matte Ice Blue":[0],"Matte Lilac Purple":[1],"Matte Marine Blue":[1],"Matte Dark Red":[1],"Matte Dark Blue":[0],"Matte Dark Brown":[1],"Matte Dark Green":[1],"Matte Desert Tan":[0],"Matte Bone White":[0],"Matte Plum":[0],"Matte Sky Blue":[0],"Matte Apple Green":[0],"Matte Dark Chocolate":[1],"Matte Caramel":[0],"Matte Terracotta":[0],"Matte Nardo Gray":[1]}},"PETG Basic":{"group":"PETG","url":"https://us.store.bambulab.com/products/petg-basic","colors":{"Black":[1],"White":[1],"Gray":[1],"Red":[1],"Yellow":[1],"Reflex Blue":[1],"Dark Brown":[1]}},"PETG HF":{"group":"PETG","url":"https://us.store.bambulab.com/products/petg-hf","colors":{"Blue":[0],"Red":[0],"Black":[1],"Gray":[0],"White":[0],"Dark Gray":[0],"Cream":[0],"Orange":[0],"Green":[0],"Yellow":[0],"Lime Green":[0],"Forest Green":[0],"Lake Blue":[0],"Peanut Brown":[0]}},"TPU 95A HF":{"group":"TPU","url":"https://us.store.bambulab.com/products/tpu-95a-hf","colors":{"Black":[1],"White":[0],"Gray":[1],"Yellow":[1],"Blue":[1],"Red":[0]}},"TPU for AMS":{"group":"TPU","url":"https://us.store.bambulab.com/products/tpu-for-ams","colors":{"Red":[1],"Yellow":[0],"Blue":[1],"Neon Green":[1],"White":[1],"Gray":[1],"Black":[1]}},"TPU 85A-90A":{"group":"TPU","url":"https://us.store.bambulab.com/products/tpu-85a-tpu-90a","colors":{"85A \u2014 Light Cyan":[1],"85A \u2014 Neon Orange":[1],"85A \u2014 Black":[1],"85A \u2014 Flesh":[1],"85A \u2014 Lime Green":[1],"90A \u2014 Black":[1],"90A \u2014 White":[1],"90A \u2014 Quicksilver":[1],"90A \u2014 Crystal Blue":[1],"90A \u2014 Grape Jelly":[1],"90A \u2014 Cocoa Brown":[1],"90A \u2014 Frozen":[1],"90A \u2014 Blaze":[1]}}}};
-const GROUPS = ["PLA","PETG","TPU"];
+const DATA      = {"dates":["3/19/26"],"filaments":{"PLA Basic":{"group":"PLA","url":"https://us.store.bambulab.com/products/pla-basic-filament","colors":{"Jade White":[1],"Orange":[1],"Blue":[1],"Gray":[1],"Beige":[0],"Silver":[0],"Yellow":[1],"Blue Grey":[0],"Pink":[1],"Brown":[1],"Red":[1],"Black":[1],"Bambu Green":[1],"Bronze":[1],"Gold":[0],"Purple":[0],"Magenta":[0],"Cyan":[1],"Mistletoe Green":[1],"Light Gray":[1],"Dark Gray":[0],"Maroon Red":[1],"Sunflower Yellow":[1],"Turquoise":[1],"Indigo Purple":[1],"Bright Green":[0],"Cocoa Brown":[1],"Hot Pink":[0],"Cobalt Blue":[0],"Pumpkin Orange":[1]}},"PLA Matte":{"group":"PLA","url":"https://us.store.bambulab.com/products/pla-matte","colors":{"Matte Ivory White":[1],"Matte Ash Gray":[1],"Matte Mandarin Orange":[1],"Matte Sakura Pink":[0],"Matte Lemon Yellow":[1],"Matte Charcoal":[1],"Matte Grass Green":[1],"Matte Latte Brown":[0],"Matte Scarlet Red":[0],"Matte Ice Blue":[0],"Matte Lilac Purple":[1],"Matte Marine Blue":[1],"Matte Dark Red":[1],"Matte Dark Blue":[0],"Matte Dark Brown":[1],"Matte Dark Green":[1],"Matte Desert Tan":[0],"Matte Bone White":[0],"Matte Plum":[0],"Matte Sky Blue":[0],"Matte Apple Green":[0],"Matte Dark Chocolate":[1],"Matte Caramel":[0],"Matte Terracotta":[0],"Matte Nardo Gray":[1]}},"PETG Basic":{"group":"PETG","url":"https://us.store.bambulab.com/products/petg-basic","colors":{"Black":[1],"White":[1],"Gray":[1],"Red":[1],"Yellow":[1],"Reflex Blue":[1],"Dark Brown":[1]}},"PETG HF":{"group":"PETG","url":"https://us.store.bambulab.com/products/petg-hf","colors":{"Blue":[0],"Red":[0],"Black":[1],"Gray":[0],"White":[0],"Dark Gray":[0],"Cream":[0],"Orange":[0],"Green":[0],"Yellow":[0],"Lime Green":[0],"Forest Green":[0],"Lake Blue":[0],"Peanut Brown":[0]}},"TPU 95A HF":{"group":"TPU","url":"https://us.store.bambulab.com/products/tpu-95a-hf","colors":{"Black":[1],"White":[0],"Gray":[1],"Yellow":[1],"Blue":[1],"Red":[0]}},"TPU for AMS":{"group":"TPU","url":"https://us.store.bambulab.com/products/tpu-for-ams","colors":{"Red":[1],"Yellow":[0],"Blue":[1],"Neon Green":[1],"White":[1],"Gray":[1],"Black":[1]}},"TPU 85A-90A":{"group":"TPU","url":"https://us.store.bambulab.com/products/tpu-85a-tpu-90a","colors":{"85A \u2014 Light Cyan":[1],"85A \u2014 Neon Orange":[1],"85A \u2014 Black":[1],"85A \u2014 Flesh":[1],"85A \u2014 Lime Green":[1],"90A \u2014 Black":[1],"90A \u2014 White":[1],"90A \u2014 Quicksilver":[1],"90A \u2014 Crystal Blue":[1],"90A \u2014 Grape Jelly":[1],"90A \u2014 Cocoa Brown":[1],"90A \u2014 Frozen":[1],"90A \u2014 Blaze":[1]}}}};
+const COLOR_MAP = {"jade white":"#FFFFFF","magenta":"#EC008C","gold":"#E4BD68","mistletoe green":"#3F8E43","red":"#B50011","purple":"#8344B0","beige":"#F7E6DE","pink":"#F55A74","sunflower yellow":"#FEC600","bronze":"#847D48","turquoise":"#00B1B7","indigo purple":"#482960","light gray":"#D1D3D5","hot pink":"#F5547C","yellow":"#F4EE2A","cocoa brown":"#6F5034","cyan":"#0086D6","blue grey":"#5B6579","silver":"#C8C8C8","orange":"#F74E02","bright green":"#BECF00","brown":"#9D432C","blue":"#0047BB","dark gray":"#545454","gray":"#8E9089","pumpkin orange":"#FF9016","bambu green":"#00AE42","maroon red":"#9D2235","cobalt blue":"#0056B8","black":"#000000","ivory white":"#FFFFFF","bone white":"#CBC6B8","desert tan":"#E8DBB7","latte brown":"#D3B7A7","caramel":"#AE835B","terracotta":"#B15533","dark brown":"#7D6556","dark chocolate":"#4D3324","lilac purple":"#AE96D4","sakura pink":"#E8AFCF","mandarin orange":"#F99963","lemon yellow":"#F7D959","plum":"#950051","scarlet red":"#DE4343","dark red":"#BB3D43","dark green":"#68724D","grass green":"#61C680","apple green":"#C2E189","ice blue":"#B8CDE9","sky blue":"#56B7E6","marine blue":"#0078BF","dark blue":"#042F56","ash gray":"#9B9EA0","nardo gray":"#757575","charcoal":"#000000","teal":"#009FA1","light jade":"#96D8AF","mellow yellow":"#F5DBAB","cherry pink":"#F5B6CD","lavender":"#B8ACD6","white marble":"#F7F3F0","iridium gold metallic":"#B39B84","copper brown metallic":"#AA6443","oxide green metallic":"#1D7C6A","cobalt blue metallic":"#39699E","iron gray metallic":"#43403D","baby blue":"#A8C6EE","champagne":"#F3CFB2","white":"#FFFFFF","classic gold sparkle":"#CEA629","slate gray sparkle":"#8E9089","crimson red sparkle":"#792B36","royal purple sparkle":"#483D8B","alpine green sparkle":"#3F5443","onyx black sparkle":"#2D2B28"};
+const GROUPS    = ["PLA","PETG","TPU"];
 const FILAMENT_NAMES = Object.keys(DATA.filaments);
+
+let colorModeOn   = false;
+let sectionSort   = {};   // name -> "alpha"|"inFirst"|"outFirst"
+let currentDateIdx = 0;
+
+/* ── Color helpers ── */
+function getHex(name) {
+  const lo = name.toLowerCase();
+  if (COLOR_MAP[lo]) return COLOR_MAP[lo];
+  // Strip "Matte " prefix (PLA Matte sheet uses "Matte X" but CSV has "X")
+  const noMatte = lo.replace(/^matte\s+/, "");
+  if (COLOR_MAP[noMatte]) return COLOR_MAP[noMatte];
+  // Strip variant prefix like "85A — " or "90A — "
+  const noVariant = lo.replace(/^\d+a\s+[\u2014-]\s+/, "");
+  if (COLOR_MAP[noVariant]) return COLOR_MAP[noVariant];
+  return null;
+}
+function textContrast(hex) {
+  const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+  return (0.299*r + 0.587*g + 0.114*b) / 255 > 0.55 ? "#111827" : "#f9fafb";
+}
+function applyColorMode() {
+  document.querySelectorAll(".pill").forEach(p => {
+    const hex = p.dataset.hex;
+    if (colorModeOn && hex) {
+      p.style.background = hex;
+      p.style.color = textContrast(hex);
+      p.style.border = "1px solid rgba(0,0,0,.18)";
+    } else {
+      p.style.background = p.style.color = p.style.border = "";
+    }
+  });
+  const btn = document.getElementById("color-toggle");
+  btn.classList.toggle("off", !colorModeOn);
+}
+function toggleColorMode() {
+  colorModeOn = !colorModeOn;
+  localStorage.setItem("colorMode", colorModeOn ? "1" : "0");
+  applyColorMode();
+}
 
 /* ── Theme ── */
 function toggleTheme() {
   const html = document.documentElement;
-  const isDark = html.getAttribute("data-theme") === "dark";
-  html.setAttribute("data-theme", isDark ? "light" : "dark");
-  document.getElementById("theme-toggle").textContent = isDark ? "🌙" : "☀️";
-  localStorage.setItem("theme", isDark ? "light" : "dark");
+  const dark = html.getAttribute("data-theme") === "dark";
+  html.setAttribute("data-theme", dark ? "light" : "dark");
+  document.getElementById("theme-toggle").textContent = dark ? "🌙" : "☀️";
+  localStorage.setItem("theme", dark ? "light" : "dark");
 }
 (function() {
-  /* ?reset clears saved theme and drops the param from the URL */
   if (location.search.includes("reset")) {
     localStorage.removeItem("theme");
-    history.replaceState(null, "", location.pathname);
+    localStorage.removeItem("colorMode");
+    history.replaceState(null,"",location.pathname);
   }
   const saved = localStorage.getItem("theme");
   if (saved) {
     document.documentElement.setAttribute("data-theme", saved);
     document.getElementById("theme-toggle").textContent = saved === "dark" ? "☀️" : "🌙";
-  } else {
-    document.getElementById("theme-toggle").textContent = "🌙";
   }
+  colorModeOn = localStorage.getItem("colorMode") === "1";
+  if (!colorModeOn) document.getElementById("color-toggle").classList.add("off");
 })();
 
 /* ── Date picker ── */
 function populatePicker() {
   const sel = document.getElementById("date-picker");
-  const dates = DATA.dates;
-  dates.slice().reverse().forEach((d, i) => {
+  DATA.dates.slice().reverse().forEach((d, i) => {
     const opt = document.createElement("option");
-    opt.value = d;
-    opt.textContent = d;
+    opt.value = d; opt.textContent = d;
     if (i === 0) opt.selected = true;
     sel.appendChild(opt);
   });
 }
 
-/* ── Stats helpers ── */
-function statsForDate(colors, dateIdx) {
-  const vals = Object.values(colors).map(arr => arr[dateIdx] ?? 0);
-  const total = vals.length;
+/* ── Stats ── */
+function statsForDate(colors, idx) {
+  const vals = Object.values(colors).map(a => a[idx] ?? 0);
   const inStk = vals.filter(v => v === 1).length;
-  return { total, inStk, out: total - inStk, pct: total ? Math.round(inStk/total*100) : 0 };
+  return { total: vals.length, inStk, out: vals.length - inStk, pct: vals.length ? Math.round(inStk/vals.length*100) : 0 };
 }
-
 function barColor(pct) {
   return pct >= 75 ? "#4caf50" : pct >= 40 ? "#ff9800" : "#f44336";
 }
 
 /* ── Chart ── */
 function buildChart(dateIdx) {
-  const CHART_H = 140, BAR_W = 36, GAP = 18, PAD = 8, LABEL_H = 36;
+  const CHART_H=140, BAR_W=36, GAP=18, PAD=8, LABEL_H=36;
   const SVG_H = CHART_H + LABEL_H + 10;
-  const names = FILAMENT_NAMES;
-  const maxTotal = Math.max(...names.map(n => Object.keys(DATA.filaments[n].colors).length));
-  const SVG_W = PAD*2 + names.length*BAR_W + (names.length-1)*GAP;
-
+  const maxTotal = Math.max(...FILAMENT_NAMES.map(n => Object.keys(DATA.filaments[n].colors).length));
+  const SVG_W = PAD*2 + FILAMENT_NAMES.length*(BAR_W+GAP) - GAP;
   const shortLabels = ["PLA Basic","PLA Matte","PETG Basic","PETG HF","TPU 95A HF","TPU AMS","TPU 85/90A"];
-  let bars = "", labels = "";
-
-  names.forEach((name, i) => {
-    const {total, inStk, out, pct} = statsForDate(DATA.filaments[name].colors, dateIdx);
+  let bars="", labels="";
+  FILAMENT_NAMES.forEach((name,i) => {
+    const {total,inStk} = statsForDate(DATA.filaments[name].colors, dateIdx);
+    const out = total - inStk;
     const x = PAD + i*(BAR_W+GAP);
     const fullH = Math.round(total/maxTotal*CHART_H);
-    const inH  = Math.round(inStk/total*fullH);
-    const outH = fullH - inH;
+    const inH = Math.round(inStk/total*fullH), outH = fullH - inH;
     const yTop = CHART_H - fullH;
-
-    if (outH > 0) bars += `<rect x="${x}" y="${yTop}" width="${BAR_W}" height="${outH}" fill="#c0504d" rx="3"/>`;
-    if (inH  > 0) bars += `<rect x="${x}" y="${yTop+outH}" width="${BAR_W}" height="${inH}" fill="#4472c4" rx="3"/>`;
-
+    if (outH>0) bars += `<rect x="${x}" y="${yTop}" width="${BAR_W}" height="${outH}" fill="#c0504d" rx="3"/>`;
+    if (inH>0)  bars += `<rect x="${x}" y="${yTop+outH}" width="${BAR_W}" height="${inH}" fill="#4472c4" rx="3"/>`;
     const parts = (shortLabels[i]||name).split(" ");
     const mid = Math.ceil(parts.length/2);
-    const line1 = parts.slice(0,mid).join(" ");
-    const line2 = parts.slice(mid).join(" ");
     const lx = x + BAR_W/2;
-    labels += `<text x="${lx}" y="${CHART_H+14}" text-anchor="middle" fill="var(--text-dim)" font-size="10" font-family="system-ui">${line1}</text>`;
-    if (line2) labels += `<text x="${lx}" y="${CHART_H+27}" text-anchor="middle" fill="var(--text-dim)" font-size="10" font-family="system-ui">${line2}</text>`;
+    labels += `<text x="${lx}" y="${CHART_H+14}" text-anchor="middle" fill="var(--text-dim)" font-size="10" font-family="system-ui">${parts.slice(0,mid).join(" ")}</text>`;
+    if (mid<parts.length) labels += `<text x="${lx}" y="${CHART_H+27}" text-anchor="middle" fill="var(--text-dim)" font-size="10" font-family="system-ui">${parts.slice(mid).join(" ")}</text>`;
   });
+  const lx = SVG_W-130;
+  const legend = `<rect x="${lx}" y="4" width="12" height="12" fill="#4472c4" rx="2"/><text x="${lx+16}" y="14" fill="var(--text-dim)" font-size="11" font-family="system-ui">In Stock</text><rect x="${lx+70}" y="4" width="12" height="12" fill="#c0504d" rx="2"/><text x="${lx+86}" y="14" fill="var(--text-dim)" font-size="11" font-family="system-ui">Out</text>`;
+  document.getElementById("chart").innerHTML = `<svg viewBox="0 0 ${SVG_W} ${SVG_H}" width="100%" style="max-width:${SVG_W}px;display:block;margin:0 auto">${legend}${bars}${labels}</svg>`;
+}
 
-  const lx = SVG_W - 130;
-  const legend = `
-    <rect x="${lx}" y="4" width="12" height="12" fill="#4472c4" rx="2"/>
-    <text x="${lx+16}" y="14" fill="var(--text-dim)" font-size="11" font-family="system-ui">In Stock</text>
-    <rect x="${lx+70}" y="4" width="12" height="12" fill="#c0504d" rx="2"/>
-    <text x="${lx+86}" y="14" fill="var(--text-dim)" font-size="11" font-family="system-ui">Out</text>`;
+/* ── Pills (sorted, with color data) ── */
+function buildPills(name, dateIdx) {
+  const info = DATA.filaments[name];
+  let entries = Object.entries(info.colors);
+  const sort = sectionSort[name] || "alpha";
+  entries.sort(([a, arrA], [b, arrB]) => {
+    if (sort === "inFirst") {
+      const diff = ((arrB[dateIdx]??0) === 1 ? 0 : 1) - ((arrA[dateIdx]??0) === 1 ? 0 : 1);
+      if (diff !== 0) return diff;
+    } else if (sort === "outFirst") {
+      const diff = ((arrA[dateIdx]??0) === 1 ? 0 : 1) - ((arrB[dateIdx]??0) === 1 ? 0 : 1);
+      if (diff !== 0) return diff;
+    }
+    return a.localeCompare(b);
+  });
+  return entries.map(([color, arr]) => {
+    const inS = (arr[dateIdx]??0) === 1;
+    const hex = getHex(color) || "";
+    return `<span class="pill ${inS?"in":"out"}" data-hex="${hex}">${inS?"✅":"🚫"} ${color}</span>`;
+  }).join("");
+}
 
-  document.getElementById("chart").innerHTML =
-    `<svg viewBox="0 0 ${SVG_W} ${SVG_H}" width="100%" style="max-width:${SVG_W}px;display:block;margin:0 auto">
-      ${legend}${bars}${labels}
-    </svg>`;
+/* ── Sort click handler ── */
+function sortSection(name, sortType, e) {
+  e.preventDefault(); e.stopPropagation();
+  sectionSort[name] = (sectionSort[name] === sortType) ? "alpha" : sortType;
+  const container = document.getElementById("pills-" + name.replace(/[^a-z0-9]/gi,"-"));
+  if (container) {
+    container.innerHTML = buildPills(name, currentDateIdx);
+    applyColorMode();
+  }
+  // Update active underline on the two buttons in this summary
+  const summary = container?.closest("details")?.querySelector("summary");
+  if (summary) updateSortBtns(summary, sectionSort[name]);
+}
+function updateSortBtns(summary, sort) {
+  summary.querySelectorAll(".sort-btn").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.sort === sort);
+  });
 }
 
 /* ── Columns ── */
 function buildColumns(dateIdx) {
   const wrap = document.getElementById("columns");
   wrap.innerHTML = "";
-
   GROUPS.forEach(group => {
     const groupFilaments = FILAMENT_NAMES.filter(n => DATA.filaments[n].group === group);
-    const allColors = groupFilaments.flatMap(n => Object.values(DATA.filaments[n].colors).map(arr => arr[dateIdx]??0));
-    const total = allColors.length;
-    const inStk = allColors.filter(v=>v===1).length;
-    const out   = total - inStk;
-    const pct   = total ? Math.round(inStk/total*100) : 0;
-    const bc    = barColor(pct);
+    const allColors = groupFilaments.flatMap(n => Object.values(DATA.filaments[n].colors).map(a => a[dateIdx]??0));
+    const total = allColors.length, inStk = allColors.filter(v=>v===1).length;
+    const out = total - inStk, pct = total ? Math.round(inStk/total*100) : 0;
 
-    // Sections
     let sectionsHTML = "";
     groupFilaments.forEach(name => {
       const info = DATA.filaments[name];
       const s = statsForDate(info.colors, dateIdx);
-      const pills = Object.entries(info.colors).map(([color, arr]) => {
-        const inS = (arr[dateIdx]??0) === 1;
-        return `<span class="pill ${inS?'in':'out'}">${inS?'✅':'🚫'} ${color}</span>`;
-      }).join("");
-
+      const safeId = "pills-" + name.replace(/[^a-z0-9]/gi,"-");
+      const sort = sectionSort[name] || "alpha";
       sectionsHTML += `
         <details open>
           <summary>
             <span class="triangle">&#9658;</span>
             <span class="section-name">${name}</span>
             <span class="section-meta">
-              <span class="si">${s.inStk}✅</span>
-              <span class="so">${s.out}🚫</span>
+              <button class="sort-btn si${sort==="inFirst"?" active":""}" data-sort="inFirst"
+                onclick="sortSection('${name}','inFirst',event)">${s.inStk}✅</button>
+              <button class="sort-btn so${sort==="outFirst"?" active":""}" data-sort="outFirst"
+                onclick="sortSection('${name}','outFirst',event)">${s.out}🚫</button>
               <a class="shop-link" href="${info.url}" target="_blank" onclick="event.stopPropagation()">Shop ↗</a>
             </span>
           </summary>
-          <div class="pills">${pills}</div>
+          <div class="pills" id="${safeId}">${buildPills(name, dateIdx)}</div>
         </details>`;
     });
 
     const col = document.createElement("div");
-    col.className = "col";
     col.innerHTML = `
       <div class="col-header">
         <div class="col-title">${group}</div>
@@ -421,9 +381,8 @@ function buildColumns(dateIdx) {
           <span class="so">${out} out</span>
           <span class="pct">${pct}%</span>
         </div>
-        <div class="prog-wrap"><div class="prog-bar" style="width:${pct}%;background:${bc}"></div></div>
-      </div>
-      ${sectionsHTML}`;
+        <div class="prog-wrap"><div class="prog-bar" style="width:${pct}%;background:${barColor(pct)}"></div></div>
+      </div>${sectionsHTML}`;
     wrap.appendChild(col);
   });
 }
@@ -432,8 +391,10 @@ function buildColumns(dateIdx) {
 function render(dateStr) {
   const idx = DATA.dates.indexOf(dateStr);
   if (idx === -1) return;
+  currentDateIdx = idx;
   buildChart(idx);
   buildColumns(idx);
+  applyColorMode();
 }
 
 /* ── Init ── */
