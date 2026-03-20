@@ -141,6 +141,7 @@
     }
     .pill.in  { background: var(--in-bg);  color: var(--in-fg); }
     .pill.out { background: var(--out-bg); color: var(--out-fg); }
+    .pill-divider { width: 100%; height: 1px; background: var(--border); margin: .2rem 0; }
 
     footer {
       text-align: center; padding: 2rem 1rem; font-size: .75rem; color: var(--text-dim);
@@ -322,11 +323,18 @@ function buildPills(name, dateIdx) {
     }
     return sortKey(a).localeCompare(sortKey(b));
   });
-  return entries.map(([color, arr]) => {
+  let pillsHTML = "";
+  let lastInStock = null;
+  entries.forEach(([color, arr]) => {
     const inS = (arr[dateIdx]??0) === 1;
+    if ((sort === "inFirst" || sort === "outFirst") && lastInStock !== null && lastInStock !== inS) {
+      pillsHTML += `<span class="pill-divider"></span>`;
+    }
+    lastInStock = inS;
     const hex = getHex(color) || "";
-    return `<span class="pill ${inS?"in":"out"}" data-hex="${hex}">${inS?"✅":"🚫"} ${color}</span>`;
-  }).join("");
+    pillsHTML += `<span class="pill ${inS?"in":"out"}" data-hex="${hex}">${inS?"✅":"🚫"} ${color}</span>`;
+  });
+  return pillsHTML;
 }
 
 /* ── Sort click handler ── */
@@ -371,9 +379,9 @@ function buildColumns(dateIdx) {
             <span class="section-name">${name}</span>
             <span class="section-meta">
               <button class="sort-btn si${sort==="inFirst"?" active":""}" data-sort="inFirst"
-                onclick="sortSection('${name}','inFirst',event)">${s.inStk}✅</button>
+                onclick="sortSection('${name}','inFirst',event)">${s.inStk} ✅</button>
               <button class="sort-btn so${sort==="outFirst"?" active":""}" data-sort="outFirst"
-                onclick="sortSection('${name}','outFirst',event)">${s.out}🚫</button>
+                onclick="sortSection('${name}','outFirst',event)">${s.out} 🚫</button>
               <a class="shop-link" href="${info.url}" target="_blank" onclick="event.stopPropagation()">Shop ↗</a>
             </span>
           </summary>
