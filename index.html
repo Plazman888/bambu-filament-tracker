@@ -107,7 +107,7 @@
     }
     summary::-webkit-details-marker { display: none; }
     .triangle {
-      font-size: 1.1rem; color: var(--text-dim); transition: transform .2s;
+      font-size: 1.1rem; color: var(--text); transition: transform .2s;
       flex-shrink: 0; display: inline-block; line-height: 1;
     }
     details[open] .triangle { transform: rotate(90deg); }
@@ -137,6 +137,7 @@
     .pill {
       font-size: .7rem; padding: .18rem .42rem; border-radius: 99px;
       white-space: nowrap; transition: background .2s, color .2s;
+      border: 1px solid transparent;
     }
     .pill.in  { background: var(--in-bg);  color: var(--in-fg); }
     .pill.out { background: var(--out-bg); color: var(--out-fg); }
@@ -181,8 +182,8 @@
 </footer>
 
 <script>
-const DATA      = {"dates":["3/19/26"],"filaments":{"PLA Basic":{"group":"PLA","url":"https://us.store.bambulab.com/products/pla-basic-filament","colors":{"Jade White":[1],"Orange":[1],"Blue":[1],"Gray":[1],"Beige":[0],"Silver":[0],"Yellow":[1],"Blue Grey":[0],"Pink":[1],"Brown":[1],"Red":[1],"Black":[1],"Bambu Green":[1],"Bronze":[1],"Gold":[0],"Purple":[0],"Magenta":[0],"Cyan":[1],"Mistletoe Green":[1],"Light Gray":[1],"Dark Gray":[0],"Maroon Red":[1],"Sunflower Yellow":[1],"Turquoise":[1],"Indigo Purple":[1],"Bright Green":[0],"Cocoa Brown":[1],"Hot Pink":[0],"Cobalt Blue":[0],"Pumpkin Orange":[1]}},"PLA Matte":{"group":"PLA","url":"https://us.store.bambulab.com/products/pla-matte","colors":{"Matte Ivory White":[1],"Matte Ash Gray":[1],"Matte Mandarin Orange":[1],"Matte Sakura Pink":[0],"Matte Lemon Yellow":[1],"Matte Charcoal":[1],"Matte Grass Green":[1],"Matte Latte Brown":[0],"Matte Scarlet Red":[0],"Matte Ice Blue":[0],"Matte Lilac Purple":[1],"Matte Marine Blue":[1],"Matte Dark Red":[1],"Matte Dark Blue":[0],"Matte Dark Brown":[1],"Matte Dark Green":[1],"Matte Desert Tan":[0],"Matte Bone White":[0],"Matte Plum":[0],"Matte Sky Blue":[0],"Matte Apple Green":[0],"Matte Dark Chocolate":[1],"Matte Caramel":[0],"Matte Terracotta":[0],"Matte Nardo Gray":[1]}},"PETG Basic":{"group":"PETG","url":"https://us.store.bambulab.com/products/petg-basic","colors":{"Black":[1],"White":[1],"Gray":[1],"Red":[1],"Yellow":[1],"Reflex Blue":[1],"Dark Brown":[1]}},"PETG HF":{"group":"PETG","url":"https://us.store.bambulab.com/products/petg-hf","colors":{"Blue":[0],"Red":[0],"Black":[1],"Gray":[0],"White":[0],"Dark Gray":[0],"Cream":[0],"Orange":[0],"Green":[0],"Yellow":[0],"Lime Green":[0],"Forest Green":[0],"Lake Blue":[0],"Peanut Brown":[0]}},"TPU 95A HF":{"group":"TPU","url":"https://us.store.bambulab.com/products/tpu-95a-hf","colors":{"Black":[1],"White":[0],"Gray":[1],"Yellow":[1],"Blue":[1],"Red":[0]}},"TPU for AMS":{"group":"TPU","url":"https://us.store.bambulab.com/products/tpu-for-ams","colors":{"Red":[1],"Yellow":[0],"Blue":[1],"Neon Green":[1],"White":[1],"Gray":[1],"Black":[1]}},"TPU 85A-90A":{"group":"TPU","url":"https://us.store.bambulab.com/products/tpu-85a-tpu-90a","colors":{"85A \u2014 Light Cyan":[1],"85A \u2014 Neon Orange":[1],"85A \u2014 Black":[1],"85A \u2014 Flesh":[1],"85A \u2014 Lime Green":[1],"90A \u2014 Black":[1],"90A \u2014 White":[1],"90A \u2014 Quicksilver":[1],"90A \u2014 Crystal Blue":[1],"90A \u2014 Grape Jelly":[1],"90A \u2014 Cocoa Brown":[1],"90A \u2014 Frozen":[1],"90A \u2014 Blaze":[1]}}}};
-const COLOR_MAP = {"jade white":"#FFFFFF","magenta":"#EC008C","gold":"#E4BD68","mistletoe green":"#3F8E43","red":"#B50011","purple":"#8344B0","beige":"#F7E6DE","pink":"#F55A74","sunflower yellow":"#FEC600","bronze":"#847D48","turquoise":"#00B1B7","indigo purple":"#482960","light gray":"#D1D3D5","hot pink":"#F5547C","yellow":"#F4EE2A","cocoa brown":"#6F5034","cyan":"#0086D6","blue grey":"#5B6579","silver":"#C8C8C8","orange":"#F74E02","bright green":"#BECF00","brown":"#9D432C","blue":"#0047BB","dark gray":"#545454","gray":"#8E9089","pumpkin orange":"#FF9016","bambu green":"#00AE42","maroon red":"#9D2235","cobalt blue":"#0056B8","black":"#000000","ivory white":"#FFFFFF","bone white":"#CBC6B8","desert tan":"#E8DBB7","latte brown":"#D3B7A7","caramel":"#AE835B","terracotta":"#B15533","dark brown":"#7D6556","dark chocolate":"#4D3324","lilac purple":"#AE96D4","sakura pink":"#E8AFCF","mandarin orange":"#F99963","lemon yellow":"#F7D959","plum":"#950051","scarlet red":"#DE4343","dark red":"#BB3D43","dark green":"#68724D","grass green":"#61C680","apple green":"#C2E189","ice blue":"#B8CDE9","sky blue":"#56B7E6","marine blue":"#0078BF","dark blue":"#042F56","ash gray":"#9B9EA0","nardo gray":"#757575","charcoal":"#000000","teal":"#009FA1","light jade":"#96D8AF","mellow yellow":"#F5DBAB","cherry pink":"#F5B6CD","lavender":"#B8ACD6","white marble":"#F7F3F0","iridium gold metallic":"#B39B84","copper brown metallic":"#AA6443","oxide green metallic":"#1D7C6A","cobalt blue metallic":"#39699E","iron gray metallic":"#43403D","baby blue":"#A8C6EE","champagne":"#F3CFB2","white":"#FFFFFF","classic gold sparkle":"#CEA629","slate gray sparkle":"#8E9089","crimson red sparkle":"#792B36","royal purple sparkle":"#483D8B","alpine green sparkle":"#3F5443","onyx black sparkle":"#2D2B28"};
+const DATA      = {"dates":["3/19/26"],"filaments":{"PLA Basic":{"group":"PLA","url":"https://us.store.bambulab.com/products/pla-basic-filament","colors":{"Jade White":[1],"Orange":[1],"Blue":[1],"Gray":[1],"Beige":[0],"Silver":[0],"Yellow":[1],"Blue Grey":[0],"Pink":[1],"Brown":[1],"Red":[1],"Black":[1],"Bambu Green":[1],"Bronze":[1],"Gold":[0],"Purple":[0],"Magenta":[0],"Cyan":[1],"Mistletoe Green":[1],"Light Gray":[1],"Dark Gray":[0],"Maroon Red":[1],"Sunflower Yellow":[1],"Turquoise":[1],"Indigo Purple":[0],"Bright Green":[0],"Cocoa Brown":[1],"Hot Pink":[0],"Cobalt Blue":[0],"Pumpkin Orange":[1]}},"PLA Matte":{"group":"PLA","url":"https://us.store.bambulab.com/products/pla-matte","colors":{"Matte Ivory White":[1],"Matte Ash Gray":[1],"Matte Mandarin Orange":[1],"Matte Sakura Pink":[0],"Matte Lemon Yellow":[1],"Matte Charcoal":[1],"Matte Grass Green":[1],"Matte Latte Brown":[0],"Matte Scarlet Red":[1],"Matte Ice Blue":[0],"Matte Lilac Purple":[1],"Matte Marine Blue":[1],"Matte Dark Red":[1],"Matte Dark Blue":[0],"Matte Dark Brown":[1],"Matte Dark Green":[1],"Matte Desert Tan":[0],"Matte Bone White":[0],"Matte Plum":[0],"Matte Sky Blue":[0],"Matte Apple Green":[1],"Matte Dark Chocolate":[1],"Matte Caramel":[0],"Matte Terracotta":[0],"Matte Nardo Gray":[1]}},"PETG Basic":{"group":"PETG","url":"https://us.store.bambulab.com/products/petg-basic","colors":{"Black":[1],"White":[1],"Gray":[1],"Red":[1],"Yellow":[1],"Reflex Blue":[1],"Dark Brown":[1]}},"PETG HF":{"group":"PETG","url":"https://us.store.bambulab.com/products/petg-hf","colors":{"Blue":[0],"Red":[0],"Black":[1],"Gray":[0],"White":[0],"Dark Gray":[0],"Cream":[0],"Orange":[0],"Green":[0],"Yellow":[0],"Lime Green":[0],"Forest Green":[0],"Lake Blue":[0],"Peanut Brown":[0]}},"TPU 95A HF":{"group":"TPU","url":"https://us.store.bambulab.com/products/tpu-95a-hf","colors":{"Black":[1],"White":[0],"Gray":[1],"Yellow":[1],"Blue":[1],"Red":[0]}},"TPU for AMS":{"group":"TPU","url":"https://us.store.bambulab.com/products/tpu-for-ams","colors":{"Red":[1],"Yellow":[0],"Blue":[1],"Neon Green":[1],"White":[1],"Gray":[1],"Black":[1]}},"TPU 85A-90A":{"group":"TPU","url":"https://us.store.bambulab.com/products/tpu-85a-tpu-90a","colors":{"85A \u2014 Light Cyan":[1],"85A \u2014 Neon Orange":[1],"85A \u2014 Black":[1],"85A \u2014 Flesh":[1],"85A \u2014 Lime Green":[1],"90A \u2014 Black":[1],"90A \u2014 White":[1],"90A \u2014 Quicksilver":[1],"90A \u2014 Crystal Blue":[1],"90A \u2014 Grape Jelly":[1],"90A \u2014 Cocoa Brown":[1],"90A \u2014 Frozen":[1],"90A \u2014 Blaze":[1]}}}};
+const COLOR_MAP = {"jade white":"#FFFFFF","magenta":"#EC008C","gold":"#E4BD68","mistletoe green":"#3F8E43","red":"#B50011","purple":"#8344B0","beige":"#F7E6DE","pink":"#F55A74","sunflower yellow":"#FEC600","bronze":"#847D48","turquoise":"#00B1B7","indigo purple":"#482960","light gray":"#D1D3D5","hot pink":"#F5547C","yellow":"#F4EE2A","cocoa brown":"#6F5034","cyan":"#0086D6","blue grey":"#5B6579","silver":"#C8C8C8","orange":"#F74E02","bright green":"#BECF00","brown":"#9D432C","blue":"#0047BB","dark gray":"#545454","gray":"#8E9089","pumpkin orange":"#FF9016","bambu green":"#00AE42","maroon red":"#9D2235","cobalt blue":"#0056B8","black":"#000000","ivory white":"#FFFFFF","bone white":"#CBC6B8","desert tan":"#E8DBB7","latte brown":"#D3B7A7","caramel":"#AE835B","terracotta":"#B15533","dark brown":"#7D6556","dark chocolate":"#4D3324","lilac purple":"#AE96D4","sakura pink":"#E8AFCF","mandarin orange":"#F99963","lemon yellow":"#F7D959","plum":"#950051","scarlet red":"#DE4343","dark red":"#BB3D43","dark green":"#68724D","grass green":"#61C680","apple green":"#C2E189","ice blue":"#B8CDE9","sky blue":"#56B7E6","marine blue":"#0078BF","dark blue":"#042F56","ash gray":"#9B9EA0","nardo gray":"#757575","charcoal":"#000000","teal":"#009FA1","light jade":"#96D8AF","mellow yellow":"#F5DBAB","cherry pink":"#F5B6CD","lavender":"#B8ACD6","white marble":"#F7F3F0","iridium gold metallic":"#B39B84","copper brown metallic":"#AA6443","oxide green metallic":"#1D7C6A","cobalt blue metallic":"#39699E","iron gray metallic":"#43403D","baby blue":"#A8C6EE","champagne":"#F3CFB2","white":"#FFFFFF","classic gold sparkle":"#CEA629","slate gray sparkle":"#8E9089","crimson red sparkle":"#792B36","royal purple sparkle":"#483D8B","alpine green sparkle":"#3F5443","onyx black sparkle":"#2D2B28","reflex blue":"#001389","cream":"#F9DFB9","peanut brown":"#875718","lime green":"#6EE53C","green":"#00AE42","forest green":"#39541A","lake blue":"#1F79E5","neon green":"#90FF1A","quicksilver":"#9EA2A3","frozen":"#B5E4F8","blaze":"#EB939F","grape jelly":"#D6ABFF","crystal blue":"#7EB4E1","neon orange":"#F68A1B","light cyan":"#B9E3DF","flesh":"#F3CFB2"};
 const GROUPS    = ["PLA","PETG","TPU"];
 const FILAMENT_NAMES = Object.keys(DATA.filaments);
 
@@ -298,6 +299,13 @@ function buildChart(dateIdx) {
   document.getElementById("chart").innerHTML = `<svg viewBox="0 0 ${SVG_W} ${SVG_H}" width="100%" style="max-width:${SVG_W}px;display:block;margin:0 auto">${legend}${bars}${labels}</svg>`;
 }
 
+/* ── Sort key: sort by last word so "Gray" / "Dark Gray" / "Light Gray" group together ── */
+function sortKey(name) {
+  const words = name.split(" ");
+  if (words.length < 2) return name.toLowerCase();
+  return (words[words.length - 1] + "|" + name).toLowerCase();
+}
+
 /* ── Pills (sorted, with color data) ── */
 function buildPills(name, dateIdx) {
   const info = DATA.filaments[name];
@@ -305,13 +313,14 @@ function buildPills(name, dateIdx) {
   const sort = sectionSort[name] || "alpha";
   entries.sort(([a, arrA], [b, arrB]) => {
     if (sort === "inFirst") {
-      const diff = ((arrB[dateIdx]??0) === 1 ? 0 : 1) - ((arrA[dateIdx]??0) === 1 ? 0 : 1);
-      if (diff !== 0) return diff;
-    } else if (sort === "outFirst") {
+      // in-stock (1→0) sorts before out-of-stock (0→1)
       const diff = ((arrA[dateIdx]??0) === 1 ? 0 : 1) - ((arrB[dateIdx]??0) === 1 ? 0 : 1);
       if (diff !== 0) return diff;
+    } else if (sort === "outFirst") {
+      const diff = ((arrB[dateIdx]??0) === 1 ? 0 : 1) - ((arrA[dateIdx]??0) === 1 ? 0 : 1);
+      if (diff !== 0) return diff;
     }
-    return a.localeCompare(b);
+    return sortKey(a).localeCompare(sortKey(b));
   });
   return entries.map(([color, arr]) => {
     const inS = (arr[dateIdx]??0) === 1;

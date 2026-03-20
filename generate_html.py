@@ -174,7 +174,7 @@ def build_html(dates, filaments, color_map):
     }}
     summary::-webkit-details-marker {{ display: none; }}
     .triangle {{
-      font-size: 1.1rem; color: var(--text-dim); transition: transform .2s;
+      font-size: 1.1rem; color: var(--text); transition: transform .2s;
       flex-shrink: 0; display: inline-block; line-height: 1;
     }}
     details[open] .triangle {{ transform: rotate(90deg); }}
@@ -204,6 +204,7 @@ def build_html(dates, filaments, color_map):
     .pill {{
       font-size: .7rem; padding: .18rem .42rem; border-radius: 99px;
       white-space: nowrap; transition: background .2s, color .2s;
+      border: 1px solid transparent;
     }}
     .pill.in  {{ background: var(--in-bg);  color: var(--in-fg); }}
     .pill.out {{ background: var(--out-bg); color: var(--out-fg); }}
@@ -365,6 +366,13 @@ function buildChart(dateIdx) {{
   document.getElementById("chart").innerHTML = `<svg viewBox="0 0 ${{SVG_W}} ${{SVG_H}}" width="100%" style="max-width:${{SVG_W}}px;display:block;margin:0 auto">${{legend}}${{bars}}${{labels}}</svg>`;
 }}
 
+/* ── Sort key: sort by last word so "Gray" / "Dark Gray" / "Light Gray" group together ── */
+function sortKey(name) {{
+  const words = name.split(" ");
+  if (words.length < 2) return name.toLowerCase();
+  return (words[words.length - 1] + "|" + name).toLowerCase();
+}}
+
 /* ── Pills (sorted, with color data) ── */
 function buildPills(name, dateIdx) {{
   const info = DATA.filaments[name];
@@ -372,13 +380,14 @@ function buildPills(name, dateIdx) {{
   const sort = sectionSort[name] || "alpha";
   entries.sort(([a, arrA], [b, arrB]) => {{
     if (sort === "inFirst") {{
-      const diff = ((arrB[dateIdx]??0) === 1 ? 0 : 1) - ((arrA[dateIdx]??0) === 1 ? 0 : 1);
-      if (diff !== 0) return diff;
-    }} else if (sort === "outFirst") {{
+      // in-stock (1→0) sorts before out-of-stock (0→1)
       const diff = ((arrA[dateIdx]??0) === 1 ? 0 : 1) - ((arrB[dateIdx]??0) === 1 ? 0 : 1);
       if (diff !== 0) return diff;
+    }} else if (sort === "outFirst") {{
+      const diff = ((arrB[dateIdx]??0) === 1 ? 0 : 1) - ((arrA[dateIdx]??0) === 1 ? 0 : 1);
+      if (diff !== 0) return diff;
     }}
-    return a.localeCompare(b);
+    return sortKey(a).localeCompare(sortKey(b));
   }});
   return entries.map(([color, arr]) => {{
     const inS = (arr[dateIdx]??0) === 1;
