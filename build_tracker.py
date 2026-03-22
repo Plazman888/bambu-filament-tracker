@@ -4,7 +4,7 @@ from openpyxl.utils import get_column_letter
 import os, sys
 
 # ── Config ────────────────────────────────────────────────────────────────────
-TODAY = "3/20/26"
+TODAY = "3/21/26"
 
 XLSX_PATH = "/Users/michaelwhitney/Documents/AI STUFF/HTML files created by Claudette/Bambu_Filament_Tracker.xlsx"
 
@@ -15,20 +15,20 @@ FILAMENTS = {
         "colors": [
             ("Jade White",      True),
             ("Orange",          True),
-            ("Blue",            False),
+            ("Blue",            True),
             ("Gray",            True),
             ("Beige",           True),
             ("Silver",          True),
             ("Yellow",          True),
-            ("Blue Grey",       False),
-            ("Pink",            False),
+            ("Blue Grey",       True),
+            ("Pink",            True),
             ("Brown",           True),
             ("Red",             True),
             ("Black",           True),
             ("Bambu Green",     True),
             ("Bronze",          True),
             ("Gold",            True),
-            ("Purple",          False),
+            ("Purple",          True),
             ("Magenta",         False),
             ("Cyan",            True),
             ("Mistletoe Green", True),
@@ -39,7 +39,7 @@ FILAMENTS = {
             ("Turquoise",       True),
             ("Indigo Purple",   False),
             ("Bright Green",    False),
-            ("Cocoa Brown",     True),
+            ("Cocoa Brown",     False),
             ("Hot Pink",        False),
             ("Cobalt Blue",     False),
             ("Pumpkin Orange",  True),
@@ -55,11 +55,11 @@ FILAMENTS = {
             ("Matte Lemon Yellow",   True),
             ("Matte Charcoal",       True),
             ("Matte Grass Green",    True),
-            ("Matte Latte Brown",    True),
-            ("Matte Scarlet Red",    True),
+            ("Matte Latte Brown",    False),
+            ("Matte Scarlet Red",    False),
             ("Matte Ice Blue",       False),
             ("Matte Lilac Purple",   True),
-            ("Matte Marine Blue",    True),
+            ("Matte Marine Blue",    False),
             ("Matte Dark Red",       True),
             ("Matte Dark Blue",      False),
             ("Matte Dark Brown",     True),
@@ -68,7 +68,7 @@ FILAMENTS = {
             ("Matte Bone White",     False),
             ("Matte Plum",           False),
             ("Matte Sky Blue",       False),
-            ("Matte Apple Green",    True),
+            ("Matte Apple Green",    False),
             ("Matte Dark Chocolate", True),
             ("Matte Caramel",        False),
             ("Matte Terracotta",     False),
@@ -90,15 +90,15 @@ FILAMENTS = {
     "PETG HF": {
         "url": "https://us.store.bambulab.com/products/petg-hf",
         "colors": [
-            ("Blue",         False),
-            ("Red",          True),
+            ("Blue",         True),
+            ("Red",          False),
             ("Black",        True),
-            ("Gray",         False),
-            ("White",        False),
+            ("Gray",         True),
+            ("White",        True),
             ("Dark Gray",    False),
             ("Cream",        False),
-            ("Orange",       True),
-            ("Green",        True),
+            ("Orange",       False),
+            ("Green",        False),
             ("Yellow",       False),
             ("Lime Green",   False),
             ("Forest Green", False),
