@@ -4,7 +4,7 @@ from openpyxl.utils import get_column_letter
 import os, sys
 
 # ── Config ────────────────────────────────────────────────────────────────────
-TODAY = "3/21/26"
+TODAY = "3/23/26"
 
 XLSX_PATH = "/Users/michaelwhitney/Documents/AI STUFF/HTML files created by Claudette/Bambu_Filament_Tracker.xlsx"
 
@@ -15,19 +15,19 @@ FILAMENTS = {
         "colors": [
             ("Jade White",      True),
             ("Orange",          True),
-            ("Blue",            True),
-            ("Gray",            True),
-            ("Beige",           True),
-            ("Silver",          True),
+            ("Blue",            False),
+            ("Gray",            False),
+            ("Beige",           False),
+            ("Silver",          False),
             ("Yellow",          True),
             ("Blue Grey",       True),
             ("Pink",            True),
-            ("Brown",           True),
+            ("Brown",           False),
             ("Red",             True),
             ("Black",           True),
             ("Bambu Green",     True),
             ("Bronze",          True),
-            ("Gold",            True),
+            ("Gold",            False),
             ("Purple",          True),
             ("Magenta",         False),
             ("Cyan",            True),
@@ -41,8 +41,8 @@ FILAMENTS = {
             ("Bright Green",    False),
             ("Cocoa Brown",     False),
             ("Hot Pink",        False),
-            ("Cobalt Blue",     False),
-            ("Pumpkin Orange",  True),
+            ("Cobalt Blue",     True),
+            ("Pumpkin Orange",  False),
         ],
     },
     "PLA Matte": {
@@ -69,10 +69,10 @@ FILAMENTS = {
             ("Matte Plum",           False),
             ("Matte Sky Blue",       False),
             ("Matte Apple Green",    False),
-            ("Matte Dark Chocolate", True),
+            ("Matte Dark Chocolate", False),
             ("Matte Caramel",        False),
             ("Matte Terracotta",     False),
-            ("Matte Nardo Gray",     True),
+            ("Matte Nardo Gray",     False),
         ],
     },
     "PETG Basic": {
@@ -80,7 +80,7 @@ FILAMENTS = {
         "colors": [
             ("Black",      True),
             ("White",      True),
-            ("Gray",       True),
+            ("Gray",       False),
             ("Red",        True),
             ("Yellow",     True),
             ("Reflex Blue",True),
@@ -92,9 +92,9 @@ FILAMENTS = {
         "colors": [
             ("Blue",         True),
             ("Red",          False),
-            ("Black",        True),
-            ("Gray",         True),
-            ("White",        True),
+            ("Black",        False),
+            ("Gray",         False),
+            ("White",        False),
             ("Dark Gray",    False),
             ("Cream",        False),
             ("Orange",       False),
@@ -113,7 +113,7 @@ FILAMENTS = {
             ("White",  False),
             ("Gray",   True),
             ("Yellow", True),
-            ("Blue",   True),
+            ("Blue",   False),
             ("Red",    False),
         ],
     },
@@ -121,7 +121,7 @@ FILAMENTS = {
         "url": "https://us.store.bambulab.com/products/tpu-for-ams",
         "colors": [
             ("Red",       True),
-            ("Yellow",    False),
+            ("Yellow",    True),
             ("Blue",      True),
             ("Neon Green",True),
             ("White",     True),
@@ -194,23 +194,18 @@ for name, info in FILAMENTS.items():
 
     if append_mode and name in wb.sheetnames:
         ws = wb[name]
-        # Check if TODAY already exists as a column header (avoid duplicates)
         existing_dates = [ws.cell(row=2, column=c).value for c in range(3, ws.max_column + 1)]
         if TODAY in existing_dates:
             print(f"  {name}: skipping — {TODAY} already exists")
             continue
-        # Find first empty column slot starting at col 3 (fills gaps from pre-formatting)
         next_col = 3
         while ws.cell(row=2, column=next_col).value is not None:
             next_col += 1
-        # Add date header
         c = ws.cell(row=2, column=next_col)
         apply(c, TODAY, FILL_HEADER, font("FFFFFF", bold=True), align("center"), BORDER)
-        # Add status for each color row
         for i, (color, in_stock) in enumerate(colors):
             row = i + 3
             status = "✅" if in_stock else "🚫"
-            row_fill = FILL_ROW1 if i % 2 == 0 else FILL_ROW2
             status_fill = FILL_INSTOCK if in_stock else FILL_OOS
             apply(ws.cell(row=row, column=next_col), status, status_fill, font("FFFFFF"), align("center"), BORDER)
         ws.column_dimensions[get_column_letter(next_col)].width = 12
@@ -226,16 +221,13 @@ for name, info in FILAMENTS.items():
             ws.column_dimensions[get_column_letter(col)].width = 12
         ws.row_dimensions[1].height = 26
         ws.row_dimensions[2].height = 22
-        # Title row
         ws.merge_cells("A1:C1")
         apply(ws["A1"], f"{name} — Availability Tracker",
               FILL_TITLE, font("FFFFFF", bold=True, size=11), align("left"))
         apply(ws["D1"], info["url"], FILL_TITLE, font("888888"), align("left"))
-        # Header row
         for col, h in enumerate(["#", "Color", TODAY], 1):
             c = ws.cell(row=2, column=col)
             apply(c, h, FILL_HEADER, font("FFFFFF", bold=True), align("center"), BORDER)
-        # Color rows
         for i, (color, in_stock) in enumerate(colors):
             row = i + 3
             row_fill = FILL_ROW1 if i % 2 == 0 else FILL_ROW2
@@ -250,10 +242,7 @@ for name, info in FILAMENTS.items():
 # ── Summary sheet ─────────────────────────────────────────────────────────────
 if "Summary" in wb.sheetnames:
     del wb["Summary"]
-
-# Insert Summary at position 0
 ws = wb.create_sheet("Summary", 0)
-
 ws.column_dimensions["A"].width = 18
 ws.column_dimensions["B"].width = 14
 ws.column_dimensions["C"].width = 11
@@ -262,20 +251,14 @@ ws.column_dimensions["E"].width = 12
 ws.column_dimensions["F"].width = 52
 ws.row_dimensions[1].height = 26
 ws.row_dimensions[2].height = 22
-
-# Title row
 ws.merge_cells("A1:E1")
 apply(ws["A1"], "Bambu Lab Filament Availability — Summary",
       FILL_TITLE, font("FFFFFF", bold=True, size=12), align("left"))
 apply(ws["F1"], f"Last updated: {TODAY}",
       FILL_TITLE, font("AAAAAA"), align("right"))
-
-# Header row
 for col, h in enumerate(["Filament Line","Total Colors","In Stock","Out of Stock","% In Stock","Store Link"], 1):
     c = ws.cell(row=2, column=col)
     apply(c, h, FILL_HEADER, font("FFFFFF", bold=True), align("center"), BORDER)
-
-# Data rows
 for i, (name, info) in enumerate(FILAMENTS.items()):
     row = i + 3
     row_fill = FILL_ROW1 if i % 2 == 0 else FILL_ROW2
@@ -284,7 +267,6 @@ for i, (name, info) in enumerate(FILAMENTS.items()):
     in_stk = sum(1 for _, s in colors if s)
     out_stk = total - in_stk
     pct = f"{round(in_stk/total*100)}%"
-
     apply(ws.cell(row=row, column=1), name,       row_fill, font("FFFFFF"), align("left"),   BORDER)
     apply(ws.cell(row=row, column=2), total,       row_fill, font("FFFFFF"), align("center"), BORDER)
     apply(ws.cell(row=row, column=3), in_stk,      row_fill, font("90EE90", bold=True), align("center"), BORDER)
@@ -292,7 +274,6 @@ for i, (name, info) in enumerate(FILAMENTS.items()):
           row_fill, font("FF6B6B", bold=True) if out_stk else font("FFFFFF"), align("center"), BORDER)
     apply(ws.cell(row=row, column=5), pct,         row_fill, font("FFFFFF"), align("center"), BORDER)
     apply(ws.cell(row=row, column=6), info["url"], row_fill, font("FFFFFF"), align("left"),   BORDER)
-
 ws.freeze_panes = "A3"
 
 # ── Save ──────────────────────────────────────────────────────────────────────
