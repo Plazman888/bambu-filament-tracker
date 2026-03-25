@@ -149,6 +149,33 @@
     footer a { color: var(--text-muted); text-decoration: none; }
     footer a:hover { color: var(--text); }
 
+    .trend-wrap {
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: 1rem 1.5rem .85rem; position: relative;
+    }
+    .trend-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: .7rem;
+    }
+    .trend-title {
+      font-size: .72rem; font-weight: 600; color: var(--text-dim);
+      text-transform: uppercase; letter-spacing: .07em;
+    }
+    .range-btns { display: flex; gap: .3rem; }
+    .range-btn {
+      background: none; border: 1px solid var(--border); border-radius: 5px;
+      padding: .2rem .55rem; font-size: .75rem; font-weight: 600;
+      color: var(--text-muted); cursor: pointer; transition: all .15s;
+    }
+    .range-btn:hover { background: var(--surface2); }
+    .range-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+    #trend-tooltip {
+      position: absolute; background: var(--surface); border: 1px solid var(--border);
+      border-radius: 6px; padding: .35rem .65rem; font-size: .75rem; white-space: nowrap;
+      pointer-events: none; opacity: 0; transition: opacity .1s; z-index: 20;
+      box-shadow: 0 2px 8px rgba(0,0,0,.18);
+    }
+
     @media (max-width: 700px) {
       .columns { grid-template-columns: 1fr; padding: .75rem; }
       header h1 { font-size: .95rem; }
@@ -169,6 +196,18 @@
   </div>
 </header>
 
+<div class="trend-wrap">
+  <div class="trend-header">
+    <span class="trend-title">Overall In-Stock %</span>
+    <div class="range-btns">
+      <button class="range-btn" data-range="1w" onclick="setRange('1w')">1W</button>
+      <button class="range-btn active" data-range="all" onclick="setRange('all')">All</button>
+    </div>
+  </div>
+  <div id="trend-chart"></div>
+  <div id="trend-tooltip"></div>
+</div>
+
 <div class="chart-wrap">
   <div class="chart-title">Colors by Filament Line</div>
   <div id="chart"></div>
@@ -182,7 +221,7 @@
 </footer>
 
 <script>
-const DATA      = {"dates":["3/19/26","3/20/26","3/21/26","3/23/26","3/25/26","3/25/26"],"filaments":{"PLA Basic":{"group":"PLA","url":"https://us.store.bambulab.com/products/pla-basic-filament","colors":{"Jade White":[1,1,1,1,1,1],"Orange":[1,1,1,1,1,1],"Blue":[1,0,1,0,0,0],"Gray":[1,1,1,0,1,1],"Beige":[0,1,1,0,0,0],"Silver":[0,1,1,0,0,0],"Yellow":[1,1,1,1,1,1],"Blue Grey":[0,0,1,1,1,1],"Pink":[1,0,1,1,0,0],"Brown":[1,1,1,0,0,0],"Red":[1,1,1,1,1,1],"Black":[1,1,1,1,1,1],"Bambu Green":[1,1,1,1,1,1],"Bronze":[1,1,1,1,0,0],"Gold":[0,1,1,0,1,1],"Purple":[0,0,1,1,1,1],"Magenta":[0,0,0,0,0,0],"Cyan":[1,1,1,1,1,1],"Mistletoe Green":[1,1,1,1,1,1],"Light Gray":[1,1,1,1,1,1],"Dark Gray":[0,0,0,0,0,0],"Maroon Red":[1,1,1,1,1,1],"Sunflower Yellow":[1,1,1,1,0,0],"Turquoise":[1,1,1,1,1,1],"Indigo Purple":[0,0,0,0,0,0],"Bright Green":[0,0,0,0,0,0],"Cocoa Brown":[1,1,0,0,0,0],"Hot Pink":[0,0,0,0,0,0],"Cobalt Blue":[0,0,0,1,1,1],"Pumpkin Orange":[1,1,1,0,1,1]}},"PLA Matte":{"group":"PLA","url":"https://us.store.bambulab.com/products/pla-matte","colors":{"Matte Ivory White":[1,1,1,1,1,1],"Matte Ash Gray":[1,1,1,1,1,1],"Matte Mandarin Orange":[1,1,1,1,1,1],"Matte Sakura Pink":[0,0,0,0,0,0],"Matte Lemon Yellow":[1,1,1,1,1,1],"Matte Charcoal":[1,1,1,1,1,1],"Matte Grass Green":[1,1,1,1,1,1],"Matte Latte Brown":[0,1,0,0,1,1],"Matte Scarlet Red":[1,1,0,0,1,1],"Matte Ice Blue":[0,0,0,0,0,0],"Matte Lilac Purple":[1,1,1,1,1,1],"Matte Marine Blue":[1,1,0,0,1,1],"Matte Dark Red":[1,1,1,1,1,1],"Matte Dark Blue":[0,0,0,0,0,0],"Matte Dark Brown":[1,1,1,1,1,1],"Matte Dark Green":[1,1,1,1,1,1],"Matte Desert Tan":[0,0,0,0,1,1],"Matte Bone White":[0,0,0,0,0,0],"Matte Plum":[0,0,0,0,0,0],"Matte Sky Blue":[0,0,0,0,0,0],"Matte Apple Green":[1,1,0,0,0,0],"Matte Dark Chocolate":[1,1,1,0,0,0],"Matte Caramel":[0,0,0,0,0,0],"Matte Terracotta":[0,0,0,0,0,0],"Matte Nardo Gray":[1,1,1,0,1,1]}},"PETG Basic":{"group":"PETG","url":"https://us.store.bambulab.com/products/petg-basic","colors":{"Black":[1,1,1,1,1,1],"White":[1,1,1,1,1,1],"Gray":[1,1,1,0,0,0],"Red":[1,1,1,1,1,1],"Yellow":[1,1,1,1,1,1],"Reflex Blue":[1,1,1,1,1,1],"Dark Brown":[1,1,1,1,1,1]}},"PETG HF":{"group":"PETG","url":"https://us.store.bambulab.com/products/petg-hf","colors":{"Blue":[0,0,1,1,0,0],"Red":[0,1,0,0,0,0],"Black":[1,1,1,0,0,0],"Gray":[0,0,1,0,0,0],"White":[0,0,1,0,0,0],"Dark Gray":[0,0,0,0,0,0],"Cream":[0,0,0,0,0,0],"Orange":[0,1,0,0,0,0],"Green":[0,1,0,0,0,0],"Yellow":[0,0,0,0,1,1],"Lime Green":[0,0,0,0,0,0],"Forest Green":[0,0,0,0,0,0],"Lake Blue":[0,0,0,0,0,0],"Peanut Brown":[0,0,0,0,0,0]}},"TPU 95A HF":{"group":"TPU","url":"https://us.store.bambulab.com/products/tpu-95a-hf","colors":{"Black":[1,1,1,1,1,1],"White":[0,0,0,0,0,0],"Gray":[1,1,1,1,1,1],"Yellow":[1,1,1,1,1,1],"Blue":[1,1,1,0,0,0],"Red":[0,0,0,0,0,0]}},"TPU for AMS":{"group":"TPU","url":"https://us.store.bambulab.com/products/tpu-for-ams","colors":{"Red":[1,1,1,1,1,1],"Yellow":[0,0,0,1,1,1],"Blue":[1,1,1,1,1,1],"Neon Green":[1,1,1,1,1,1],"White":[1,1,1,1,1,1],"Gray":[1,1,1,1,1,1],"Black":[1,1,1,1,1,1]}},"TPU 85A-90A":{"group":"TPU","url":"https://us.store.bambulab.com/products/tpu-85a-tpu-90a","colors":{"85A \u2014 Light Cyan":[1,1,1,1,1,1],"85A \u2014 Neon Orange":[1,1,1,1,1,1],"85A \u2014 Black":[1,1,1,1,1,1],"85A \u2014 Flesh":[1,1,1,1,1,1],"85A \u2014 Lime Green":[1,1,1,1,1,1],"90A \u2014 Black":[1,1,1,1,0,0],"90A \u2014 White":[1,1,1,1,1,1],"90A \u2014 Quicksilver":[1,1,1,1,1,1],"90A \u2014 Crystal Blue":[1,1,1,1,1,1],"90A \u2014 Grape Jelly":[1,1,1,1,1,1],"90A \u2014 Cocoa Brown":[1,1,1,1,1,1],"90A \u2014 Frozen":[1,1,1,1,1,1],"90A \u2014 Blaze":[1,1,1,1,1,1]}}}};
+const DATA      = {"dates":["3/19/26","3/20/26","3/21/26","3/23/26","3/25/26"],"filaments":{"PLA Basic":{"group":"PLA","url":"https://us.store.bambulab.com/products/pla-basic-filament","colors":{"Jade White":[1,1,1,1,1],"Orange":[1,1,1,1,1],"Blue":[1,0,1,0,0],"Gray":[1,1,1,0,1],"Beige":[0,1,1,0,0],"Silver":[0,1,1,0,0],"Yellow":[1,1,1,1,1],"Blue Grey":[0,0,1,1,1],"Pink":[1,0,1,1,0],"Brown":[1,1,1,0,0],"Red":[1,1,1,1,1],"Black":[1,1,1,1,1],"Bambu Green":[1,1,1,1,1],"Bronze":[1,1,1,1,0],"Gold":[0,1,1,0,1],"Purple":[0,0,1,1,1],"Magenta":[0,0,0,0,0],"Cyan":[1,1,1,1,1],"Mistletoe Green":[1,1,1,1,1],"Light Gray":[1,1,1,1,1],"Dark Gray":[0,0,0,0,0],"Maroon Red":[1,1,1,1,1],"Sunflower Yellow":[1,1,1,1,0],"Turquoise":[1,1,1,1,1],"Indigo Purple":[0,0,0,0,0],"Bright Green":[0,0,0,0,0],"Cocoa Brown":[1,1,0,0,0],"Hot Pink":[0,0,0,0,0],"Cobalt Blue":[0,0,0,1,1],"Pumpkin Orange":[1,1,1,0,1]}},"PLA Matte":{"group":"PLA","url":"https://us.store.bambulab.com/products/pla-matte","colors":{"Matte Ivory White":[1,1,1,1,1],"Matte Ash Gray":[1,1,1,1,1],"Matte Mandarin Orange":[1,1,1,1,1],"Matte Sakura Pink":[0,0,0,0,0],"Matte Lemon Yellow":[1,1,1,1,1],"Matte Charcoal":[1,1,1,1,1],"Matte Grass Green":[1,1,1,1,1],"Matte Latte Brown":[0,1,0,0,1],"Matte Scarlet Red":[1,1,0,0,1],"Matte Ice Blue":[0,0,0,0,0],"Matte Lilac Purple":[1,1,1,1,1],"Matte Marine Blue":[1,1,0,0,1],"Matte Dark Red":[1,1,1,1,1],"Matte Dark Blue":[0,0,0,0,0],"Matte Dark Brown":[1,1,1,1,1],"Matte Dark Green":[1,1,1,1,1],"Matte Desert Tan":[0,0,0,0,1],"Matte Bone White":[0,0,0,0,0],"Matte Plum":[0,0,0,0,0],"Matte Sky Blue":[0,0,0,0,0],"Matte Apple Green":[1,1,0,0,0],"Matte Dark Chocolate":[1,1,1,0,0],"Matte Caramel":[0,0,0,0,0],"Matte Terracotta":[0,0,0,0,0],"Matte Nardo Gray":[1,1,1,0,1]}},"PETG Basic":{"group":"PETG","url":"https://us.store.bambulab.com/products/petg-basic","colors":{"Black":[1,1,1,1,1],"White":[1,1,1,1,1],"Gray":[1,1,1,0,0],"Red":[1,1,1,1,1],"Yellow":[1,1,1,1,1],"Reflex Blue":[1,1,1,1,1],"Dark Brown":[1,1,1,1,1]}},"PETG HF":{"group":"PETG","url":"https://us.store.bambulab.com/products/petg-hf","colors":{"Blue":[0,0,1,1,0],"Red":[0,1,0,0,0],"Black":[1,1,1,0,0],"Gray":[0,0,1,0,0],"White":[0,0,1,0,0],"Dark Gray":[0,0,0,0,0],"Cream":[0,0,0,0,0],"Orange":[0,1,0,0,0],"Green":[0,1,0,0,0],"Yellow":[0,0,0,0,1],"Lime Green":[0,0,0,0,0],"Forest Green":[0,0,0,0,0],"Lake Blue":[0,0,0,0,0],"Peanut Brown":[0,0,0,0,0]}},"TPU 95A HF":{"group":"TPU","url":"https://us.store.bambulab.com/products/tpu-95a-hf","colors":{"Black":[1,1,1,1,1],"White":[0,0,0,0,0],"Gray":[1,1,1,1,1],"Yellow":[1,1,1,1,1],"Blue":[1,1,1,0,0],"Red":[0,0,0,0,0]}},"TPU for AMS":{"group":"TPU","url":"https://us.store.bambulab.com/products/tpu-for-ams","colors":{"Red":[1,1,1,1,1],"Yellow":[0,0,0,1,1],"Blue":[1,1,1,1,1],"Neon Green":[1,1,1,1,1],"White":[1,1,1,1,1],"Gray":[1,1,1,1,1],"Black":[1,1,1,1,1]}},"TPU 85A-90A":{"group":"TPU","url":"https://us.store.bambulab.com/products/tpu-85a-tpu-90a","colors":{"85A \u2014 Light Cyan":[1,1,1,1,1],"85A \u2014 Neon Orange":[1,1,1,1,1],"85A \u2014 Black":[1,1,1,1,1],"85A \u2014 Flesh":[1,1,1,1,1],"85A \u2014 Lime Green":[1,1,1,1,1],"90A \u2014 Black":[1,1,1,1,0],"90A \u2014 White":[1,1,1,1,1],"90A \u2014 Quicksilver":[1,1,1,1,1],"90A \u2014 Crystal Blue":[1,1,1,1,1],"90A \u2014 Grape Jelly":[1,1,1,1,1],"90A \u2014 Cocoa Brown":[1,1,1,1,1],"90A \u2014 Frozen":[1,1,1,1,1],"90A \u2014 Blaze":[1,1,1,1,1]}}}};
 const COLOR_MAP = {"jade white":"#FFFFFF","magenta":"#EC008C","gold":"#E4BD68","mistletoe green":"#3F8E43","red":"#B50011","purple":"#8344B0","beige":"#F7E6DE","pink":"#F55A74","sunflower yellow":"#FEC600","bronze":"#847D48","turquoise":"#00B1B7","indigo purple":"#482960","light gray":"#D1D3D5","hot pink":"#F5547C","yellow":"#F4EE2A","cocoa brown":"#6F5034","cyan":"#0086D6","blue grey":"#5B6579","silver":"#C8C8C8","orange":"#F74E02","bright green":"#BECF00","brown":"#9D432C","blue":"#0047BB","dark gray":"#545454","gray":"#8E9089","pumpkin orange":"#FF9016","bambu green":"#00AE42","maroon red":"#9D2235","cobalt blue":"#0056B8","black":"#000000","ivory white":"#FFFFFF","bone white":"#CBC6B8","desert tan":"#E8DBB7","latte brown":"#D3B7A7","caramel":"#AE835B","terracotta":"#B15533","dark brown":"#7D6556","dark chocolate":"#4D3324","lilac purple":"#AE96D4","sakura pink":"#E8AFCF","mandarin orange":"#F99963","lemon yellow":"#F7D959","plum":"#950051","scarlet red":"#DE4343","dark red":"#BB3D43","dark green":"#68724D","grass green":"#61C680","apple green":"#C2E189","ice blue":"#B8CDE9","sky blue":"#56B7E6","marine blue":"#0078BF","dark blue":"#042F56","ash gray":"#9B9EA0","nardo gray":"#757575","charcoal":"#000000","teal":"#009FA1","light jade":"#96D8AF","mellow yellow":"#F5DBAB","cherry pink":"#F5B6CD","lavender":"#B8ACD6","white marble":"#F7F3F0","iridium gold metallic":"#B39B84","copper brown metallic":"#AA6443","oxide green metallic":"#1D7C6A","cobalt blue metallic":"#39699E","iron gray metallic":"#43403D","baby blue":"#A8C6EE","champagne":"#F3CFB2","white":"#FFFFFF","classic gold sparkle":"#CEA629","slate gray sparkle":"#8E9089","crimson red sparkle":"#792B36","royal purple sparkle":"#483D8B","alpine green sparkle":"#3F5443","onyx black sparkle":"#2D2B28","reflex blue":"#001389","cream":"#F9DFB9","peanut brown":"#875718","lime green":"#6EE53C","green":"#00AE42","forest green":"#39541A","lake blue":"#1F79E5","neon green":"#90FF1A","quicksilver":"#9EA2A3","frozen":"#B5E4F8","blaze":"#EB939F","grape jelly":"#D6ABFF","crystal blue":"#7EB4E1","neon orange":"#F68A1B","light cyan":"#B9E3DF","flesh":"#F3CFB2"};
 const GROUPS    = ["PLA","PETG","TPU"];
 const FILAMENT_NAMES = Object.keys(DATA.filaments);
@@ -249,6 +288,84 @@ function toggleTheme() {
   colorModeOn = localStorage.getItem("colorMode") === "1";
   if (!colorModeOn) document.getElementById("color-toggle").classList.add("off");
 })();
+
+/* ── Line chart (trend) ── */
+let currentRange = 'all';
+
+function overallPct(dateIdx) {
+  const allColors = FILAMENT_NAMES.flatMap(n => Object.values(DATA.filaments[n].colors).map(a => a[dateIdx] ?? 0));
+  const inS = allColors.filter(v => v === 1).length;
+  return allColors.length ? Math.round(inS / allColors.length * 100) : 0;
+}
+
+function setRange(range) {
+  currentRange = range;
+  document.querySelectorAll('.range-btn').forEach(b => b.classList.toggle('active', b.dataset.range === range));
+  buildLineChart(range);
+}
+
+function buildLineChart(range) {
+  const allDates = DATA.dates;
+  const startIdx = (range === '1w') ? Math.max(0, allDates.length - 7) : 0;
+  const visibleDates = allDates.slice(startIdx);
+  const pcts = visibleDates.map((_, i) => overallPct(startIdx + i));
+  const n = visibleDates.length;
+  if (n === 0) { document.getElementById('trend-chart').innerHTML = ''; return; }
+
+  const W = 600, H = 120, PAD_L = 36, PAD_R = 16, PAD_T = 14, PAD_B = 28;
+  const chartW = W - PAD_L - PAD_R, chartH = H - PAD_T - PAD_B;
+  const xOf = i => PAD_L + (n === 1 ? chartW / 2 : i / (n - 1) * chartW);
+  const yOf = pct => PAD_T + chartH - (pct / 100 * chartH);
+
+  let grid = '';
+  [25, 50, 75, 100].forEach(pct => {
+    const y = yOf(pct);
+    grid += `<line x1="${PAD_L}" y1="${y}" x2="${W - PAD_R}" y2="${y}" stroke="var(--border)" stroke-width="1"/>`;
+    grid += `<text x="${PAD_L - 4}" y="${y + 4}" text-anchor="end" fill="var(--text-dim)" font-size="9" font-family="system-ui">${pct}%</text>`;
+  });
+
+  const areaPath = `M ${xOf(0)},${yOf(pcts[0])} ` +
+    pcts.map((p, i) => `L ${xOf(i)},${yOf(p)}`).join(' ') +
+    ` L ${xOf(n-1)},${H - PAD_B} L ${xOf(0)},${H - PAD_B} Z`;
+  const pts = pcts.map((p, i) => `${xOf(i)},${yOf(p)}`).join(' ');
+  const dots = pcts.map((p, i) => `<circle cx="${xOf(i)}" cy="${yOf(p)}" r="3.5" fill="var(--accent)" stroke="var(--bg)" stroke-width="1.5"/>`).join('');
+
+  const labelIdxs = n <= 7 ? visibleDates.map((_, i) => i) : [0, Math.floor(n/2), n-1];
+  let xlabels = '';
+  labelIdxs.forEach(i => {
+    xlabels += `<text x="${xOf(i)}" y="${H - PAD_B + 14}" text-anchor="middle" fill="var(--text-dim)" font-size="9" font-family="system-ui">${visibleDates[i]}</text>`;
+  });
+
+  const slotW = n === 1 ? chartW : chartW / (n - 1);
+  let hitAreas = '';
+  pcts.forEach((p, i) => {
+    const cx = xOf(i);
+    const x1 = Math.max(PAD_L, cx - slotW/2), x2 = Math.min(W - PAD_R, cx + slotW/2);
+    hitAreas += `<rect x="${x1}" y="${PAD_T}" width="${x2-x1}" height="${chartH}" fill="transparent" onmouseenter="showTip(event,'${visibleDates[i]}','${p}'" onmouseleave="hideTip()"/>`;
+  });
+
+  document.getElementById('trend-chart').innerHTML = `
+    <svg viewBox="0 0 ${W} ${H}" width="100%" style="display:block;overflow:visible">
+      <defs><linearGradient id="trendFill" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.25"/>
+        <stop offset="100%" stop-color="var(--accent)" stop-opacity="0.02"/>
+      </linearGradient></defs>
+      ${grid}
+      <path d="${areaPath}" fill="url(#trendFill)"/>
+      <polyline points="${pts}" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+      ${dots}${xlabels}${hitAreas}
+    </svg>`;
+}
+
+function showTip(e, date, pct) {
+  const tip = document.getElementById('trend-tooltip');
+  tip.innerHTML = `<strong>${date}</strong> &mdash; ${pct}% in stock`;
+  tip.style.opacity = '1';
+  const rect = e.target.closest('.trend-wrap').getBoundingClientRect();
+  tip.style.left = (e.clientX - rect.left + 14) + 'px';
+  tip.style.top  = (e.clientY - rect.top  - 36) + 'px';
+}
+function hideTip() { document.getElementById('trend-tooltip').style.opacity = '0'; }
 
 /* ── Date picker ── */
 function populatePicker() {
@@ -408,6 +525,7 @@ function render(dateStr) {
 
 /* ── Init ── */
 populatePicker();
+buildLineChart('all');
 render(DATA.dates[DATA.dates.length - 1]);
 </script>
 </body>
