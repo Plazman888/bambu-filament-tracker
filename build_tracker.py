@@ -6,7 +6,7 @@ import os, sys
 # ── Config ────────────────────────────────────────────────────────────────────
 TODAY = "3/23/26"
 
-XLSX_PATH = "/Users/michaelwhitney/Documents/AI STUFF/HTML files created by Claudette/Bambu_Filament_Tracker.xlsx"
+XLSX_PATH = "/Users/michaelwhitney/Library/Mobile Documents/com~apple~CloudDocs/Documents/Claude/Projects/bambu-filament-tracker/data/Bambu_Filament_Tracker.xlsx"
 
 # Colors: list of (name, inStock) tuples — updated each run by Claude
 FILAMENTS = {

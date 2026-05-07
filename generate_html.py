@@ -6,10 +6,11 @@ lets visitors browse past snapshots without a server.
 
 import json, os, csv
 import openpyxl
+from pathlib import Path
 
-XLSX_PATH = "/Users/michaelwhitney/Documents/AI STUFF/HTML files created by Claudette/Bambu_Filament_Tracker.xlsx"
-OUT_PATH  = "/Users/michaelwhitney/Documents/3D PRINTING/bambu-filament-tracker/index.html"
-COLOR_CSV = "/Users/michaelwhitney/Documents/3D PRINTING/Bambu Filament Color Hex Codes/Bambu_Filament_Colors_Complete.csv"
+XLSX_PATH = str(Path.home() / "Library" / "Mobile Documents" / "com~apple~CloudDocs" / "Documents" / "AI STUFF" / "Apps and other things AI has created for me" / "HTML files created by Claudette" / "Bambu_Filament_Tracker.xlsx")
+OUT_PATH  = str(Path.home() / "Library" / "Mobile Documents" / "com~apple~CloudDocs" / "Documents" / "AI STUFF" / "Apps and other things AI has created for me" / "bambu-filament-tracker" / "index.html")
+COLOR_CSV = str(Path.home() / "Library" / "Mobile Documents" / "com~apple~CloudDocs" / "Documents" / "3D PRINTING" / "Bambu Filament Color Hex Codes" / "Bambu_Filament_Colors_Complete.csv")
 
 SHEET_META = {
     "PLA Basic":   {"group": "PLA",  "url": "https://us.store.bambulab.com/products/pla-basic-filament"},
@@ -216,6 +217,33 @@ def build_html(dates, filaments, color_map):
     footer a {{ color: var(--text-muted); text-decoration: none; }}
     footer a:hover {{ color: var(--text); }}
 
+    .trend-wrap {{
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: 1rem 1.5rem .85rem; position: relative;
+    }}
+    .trend-header {{
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: .7rem;
+    }}
+    .trend-title {{
+      font-size: .72rem; font-weight: 600; color: var(--text-dim);
+      text-transform: uppercase; letter-spacing: .07em;
+    }}
+    .range-btns {{ display: flex; gap: .3rem; }}
+    .range-btn {{
+      background: none; border: 1px solid var(--border); border-radius: 5px;
+      padding: .2rem .55rem; font-size: .75rem; font-weight: 600;
+      color: var(--text-muted); cursor: pointer; transition: all .15s;
+    }}
+    .range-btn:hover {{ background: var(--surface2); }}
+    .range-btn.active {{ background: var(--accent); color: #fff; border-color: var(--accent); }}
+    #trend-tooltip {{
+      position: absolute; background: var(--surface); border: 1px solid var(--border);
+      border-radius: 6px; padding: .35rem .65rem; font-size: .75rem; white-space: nowrap;
+      pointer-events: none; opacity: 0; transition: opacity .1s; z-index: 20;
+      box-shadow: 0 2px 8px rgba(0,0,0,.18);
+    }}
+
     @media (max-width: 700px) {{
       .columns {{ grid-template-columns: 1fr; padding: .75rem; }}
       header h1 {{ font-size: .95rem; }}
@@ -235,6 +263,18 @@ def build_html(dates, filaments, color_map):
     <button id="theme-toggle" class="icon-btn" onclick="toggleTheme()" title="Toggle light/dark mode">🌙</button>
   </div>
 </header>
+
+<div class="trend-wrap">
+  <div class="trend-header">
+    <span class="trend-title">Overall In-Stock %</span>
+    <div class="range-btns">
+      <button class="range-btn" data-range="1w" onclick="setRange('1w')">1W</button>
+      <button class="range-btn active" data-range="all" onclick="setRange('all')">All</button>
+    </div>
+  </div>
+  <div id="trend-chart"></div>
+  <div id="trend-tooltip"></div>
+</div>
 
 <div class="chart-wrap">
   <div class="chart-title">Colors by Filament Line</div>
@@ -316,6 +356,84 @@ function toggleTheme() {{
   colorModeOn = localStorage.getItem("colorMode") === "1";
   if (!colorModeOn) document.getElementById("color-toggle").classList.add("off");
 }})();
+
+/* ── Line chart (trend) ── */
+let currentRange = 'all';
+
+function overallPct(dateIdx) {{
+  const allColors = FILAMENT_NAMES.flatMap(n => Object.values(DATA.filaments[n].colors).map(a => a[dateIdx] ?? 0));
+  const inS = allColors.filter(v => v === 1).length;
+  return allColors.length ? Math.round(inS / allColors.length * 100) : 0;
+}}
+
+function setRange(range) {{
+  currentRange = range;
+  document.querySelectorAll('.range-btn').forEach(b => b.classList.toggle('active', b.dataset.range === range));
+  buildLineChart(range);
+}}
+
+function buildLineChart(range) {{
+  const allDates = DATA.dates;
+  const startIdx = (range === '1w') ? Math.max(0, allDates.length - 7) : 0;
+  const visibleDates = allDates.slice(startIdx);
+  const pcts = visibleDates.map((_, i) => overallPct(startIdx + i));
+  const n = visibleDates.length;
+  if (n === 0) {{ document.getElementById('trend-chart').innerHTML = ''; return; }}
+
+  const W = 600, H = 120, PAD_L = 36, PAD_R = 16, PAD_T = 14, PAD_B = 28;
+  const chartW = W - PAD_L - PAD_R, chartH = H - PAD_T - PAD_B;
+  const xOf = i => PAD_L + (n === 1 ? chartW / 2 : i / (n - 1) * chartW);
+  const yOf = pct => PAD_T + chartH - (pct / 100 * chartH);
+
+  let grid = '';
+  [25, 50, 75, 100].forEach(pct => {{
+    const y = yOf(pct);
+    grid += `<line x1="${{PAD_L}}" y1="${{y}}" x2="${{W - PAD_R}}" y2="${{y}}" stroke="var(--border)" stroke-width="1"/>`;
+    grid += `<text x="${{PAD_L - 4}}" y="${{y + 4}}" text-anchor="end" fill="var(--text-dim)" font-size="9" font-family="system-ui">${{pct}}%</text>`;
+  }});
+
+  const areaPath = `M ${{xOf(0)}},${{yOf(pcts[0])}} ` +
+    pcts.map((p, i) => `L ${{xOf(i)}},${{yOf(p)}}`).join(' ') +
+    ` L ${{xOf(n-1)}},${{H - PAD_B}} L ${{xOf(0)}},${{H - PAD_B}} Z`;
+  const pts = pcts.map((p, i) => `${{xOf(i)}},${{yOf(p)}}`).join(' ');
+  const dots = pcts.map((p, i) => `<circle cx="${{xOf(i)}}" cy="${{yOf(p)}}" r="3.5" fill="var(--accent)" stroke="var(--bg)" stroke-width="1.5"/>`).join('');
+
+  const labelIdxs = n <= 7 ? visibleDates.map((_, i) => i) : [0, Math.floor(n/2), n-1];
+  let xlabels = '';
+  labelIdxs.forEach(i => {{
+    xlabels += `<text x="${{xOf(i)}}" y="${{H - PAD_B + 14}}" text-anchor="middle" fill="var(--text-dim)" font-size="9" font-family="system-ui">${{visibleDates[i]}}</text>`;
+  }});
+
+  const slotW = n === 1 ? chartW : chartW / (n - 1);
+  let hitAreas = '';
+  pcts.forEach((p, i) => {{
+    const cx = xOf(i);
+    const x1 = Math.max(PAD_L, cx - slotW/2), x2 = Math.min(W - PAD_R, cx + slotW/2);
+    hitAreas += `<rect x="${{x1}}" y="${{PAD_T}}" width="${{x2-x1}}" height="${{chartH}}" fill="transparent" onmouseenter="showTip(event,'${{visibleDates[i]}}','${{p}}'" onmouseleave="hideTip()"/>`;
+  }});
+
+  document.getElementById('trend-chart').innerHTML = `
+    <svg viewBox="0 0 ${{W}} ${{H}}" width="100%" style="display:block;overflow:visible">
+      <defs><linearGradient id="trendFill" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.25"/>
+        <stop offset="100%" stop-color="var(--accent)" stop-opacity="0.02"/>
+      </linearGradient></defs>
+      ${{grid}}
+      <path d="${{areaPath}}" fill="url(#trendFill)"/>
+      <polyline points="${{pts}}" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+      ${{dots}}${{xlabels}}${{hitAreas}}
+    </svg>`;
+}}
+
+function showTip(e, date, pct) {{
+  const tip = document.getElementById('trend-tooltip');
+  tip.innerHTML = `<strong>${{date}}</strong> &mdash; ${{pct}}% in stock`;
+  tip.style.opacity = '1';
+  const rect = e.target.closest('.trend-wrap').getBoundingClientRect();
+  tip.style.left = (e.clientX - rect.left + 14) + 'px';
+  tip.style.top  = (e.clientY - rect.top  - 36) + 'px';
+}}
+function hideTip() {{ document.getElementById('trend-tooltip').style.opacity = '0'; }}
 
 /* ── Date picker ── */
 function populatePicker() {{
@@ -475,6 +593,7 @@ function render(dateStr) {{
 
 /* ── Init ── */
 populatePicker();
+buildLineChart('all');
 render(DATA.dates[DATA.dates.length - 1]);
 </script>
 </body>
