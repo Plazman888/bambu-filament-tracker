@@ -8,8 +8,8 @@ import json, os, csv
 import openpyxl
 from pathlib import Path
 
-XLSX_PATH = str(Path.home() / "Library" / "Mobile Documents" / "com~apple~CloudDocs" / "Documents" / "AI STUFF" / "Apps and other things AI has created for me" / "HTML files created by Claudette" / "Bambu_Filament_Tracker.xlsx")
-OUT_PATH  = str(Path.home() / "Library" / "Mobile Documents" / "com~apple~CloudDocs" / "Documents" / "AI STUFF" / "Apps and other things AI has created for me" / "bambu-filament-tracker" / "index.html")
+XLSX_PATH = str(Path.home() / "Library" / "Mobile Documents" / "com~apple~CloudDocs" / "Documents" / "Claude" / "Projects" / "bambu-filament-tracker" / "data" / "Bambu_Filament_Tracker.xlsx")
+OUT_PATH  = str(Path.home() / "Library" / "Mobile Documents" / "com~apple~CloudDocs" / "Documents" / "Claude" / "Projects" / "bambu-filament-tracker" / "index.html")
 COLOR_CSV = str(Path.home() / "Library" / "Mobile Documents" / "com~apple~CloudDocs" / "Documents" / "3D PRINTING" / "Bambu Filament Color Hex Codes" / "Bambu_Filament_Colors_Complete.csv")
 
 SHEET_META = {
