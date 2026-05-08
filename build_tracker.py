@@ -4,7 +4,7 @@ from openpyxl.utils import get_column_letter
 import os, sys
 
 # ── Config ────────────────────────────────────────────────────────────────────
-TODAY = "5/7/26"
+TODAY = "5/8/26"
 
 XLSX_PATH = "/Users/michaelwhitney/Library/Mobile Documents/com~apple~CloudDocs/Documents/Claude/Projects/bambu-filament-tracker/data/Bambu_Filament_Tracker.xlsx"
 
@@ -21,7 +21,7 @@ FILAMENTS = {
             ("Silver",          True),
             ("Yellow",          True),
             ("Blue Grey",       True),
-            ("Pink",            False),
+            ("Pink",            True),
             ("Brown",           False),
             ("Red",             True),
             ("Black",           True),
@@ -29,7 +29,7 @@ FILAMENTS = {
             ("Bronze",          False),
             ("Gold",            True),
             ("Purple",          True),
-            ("Magenta",         True),
+            ("Magenta",         False),
             ("Cyan",            True),
             ("Mistletoe Green", True),
             ("Light Gray",      True),
@@ -51,16 +51,14 @@ FILAMENTS = {
             ("Matte Ivory White",    True),
             ("Matte Ash Gray",       True),
             ("Matte Mandarin Orange",True),
-            ("Matte Sakura Pink",    True),
+            ("Matte Sakura Pink",    False),
             ("Matte Lemon Yellow",   True),
             ("Matte Charcoal",       True),
             ("Matte Grass Green",    True),
             ("Matte Latte Brown",    True),
             ("Matte Scarlet Red",    True),
             ("Matte Ice Blue",       False),
-            ("Matte Lilac Purple",   False),
             ("Matte Marine Blue",    True),
-            ("Matte Dark Red",       False),
             ("Matte Dark Blue",      True),
             ("Matte Dark Brown",     True),
             ("Matte Dark Green",     True),
@@ -69,7 +67,7 @@ FILAMENTS = {
             ("Matte Plum",           False),
             ("Matte Sky Blue",       False),
             ("Matte Apple Green",    False),
-            ("Matte Dark Chocolate", True),
+            ("Matte Dark Chocolate", False),
             ("Matte Caramel",        False),
             ("Matte Terracotta",     False),
             ("Matte Nardo Gray",     True),
@@ -80,18 +78,17 @@ FILAMENTS = {
         "colors": [
             ("Black",      True),
             ("White",      True),
-            ("Gray",       True),
+            ("Gray",       False),
             ("Red",        True),
             ("Yellow",     True),
             ("Reflex Blue",True),
-            ("Dark Brown", False),
+            ("Dark Brown", True),
         ],
     },
     "PETG HF": {
         "url": "https://us.store.bambulab.com/products/petg-hf",
         "colors": [
             ("Blue",         False),
-            ("Red",          False),
             ("Black",        False),
             ("Gray",         False),
             ("White",        False),
@@ -111,9 +108,9 @@ FILAMENTS = {
         "colors": [
             ("Black",  False),
             ("White",  True),
-            ("Gray",   False),
+            ("Gray",   True),
             ("Yellow", True),
-            ("Blue",   False),
+            ("Blue",   True),
             ("Red",    True),
         ],
     },
@@ -121,8 +118,8 @@ FILAMENTS = {
         "url": "https://us.store.bambulab.com/products/tpu-for-ams",
         "colors": [
             ("Red",       False),
-            ("Yellow",    True),
-            ("Blue",      True),
+            ("Yellow",    False),
+            ("Blue",      False),
             ("Neon Green",True),
             ("White",     True),
             ("Gray",      True),
@@ -133,13 +130,12 @@ FILAMENTS = {
         "url": "https://us.store.bambulab.com/products/tpu-85a-tpu-90a",
         "colors": [
             ("85A — Light Cyan",   False),
-            ("85A — Neon Orange",  False),
+            ("85A — Neon Orange",  True),
             ("85A — Black",        True),
             ("85A — Flesh",        True),
-            ("85A — Lime Green",   True),
+            ("85A — Lime Green",   False),
             ("90A — Black",        True),
             ("90A — White",        True),
-            ("90A — Quicksilver",  False),
             ("90A — Crystal Blue", True),
             ("90A — Grape Jelly",  True),
             ("90A — Cocoa Brown",  True),
@@ -154,8 +150,8 @@ FILAMENTS = {
             ("85A — White",        True),
             ("90A — Flesh",        True),
             ("90A — Light Cyan",   False),
-            ("90A — Lime Green",   True),
-            ("90A — Neon Orange",  False),
+            ("90A — Lime Green",   False),
+            ("90A — Neon Orange",  True),
         ],
     },
 }
