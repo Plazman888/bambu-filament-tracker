@@ -4,7 +4,7 @@ from openpyxl.utils import get_column_letter
 import os, sys
 
 # ── Config ────────────────────────────────────────────────────────────────────
-TODAY = "5/8/26"
+TODAY = "5/9/26"
 
 XLSX_PATH = "/Users/michaelwhitney/Library/Mobile Documents/com~apple~CloudDocs/Documents/Claude/Projects/bambu-filament-tracker/data/Bambu_Filament_Tracker.xlsx"
 
@@ -18,15 +18,15 @@ FILAMENTS = {
             ("Blue",            True),
             ("Gray",            True),
             ("Beige",           True),
-            ("Silver",          True),
+            ("Silver",          False),
             ("Yellow",          True),
             ("Blue Grey",       True),
             ("Pink",            True),
-            ("Brown",           False),
+            ("Brown",           True),
             ("Red",             True),
             ("Black",           True),
             ("Bambu Green",     True),
-            ("Bronze",          False),
+            ("Bronze",          True),
             ("Gold",            True),
             ("Purple",          True),
             ("Magenta",         False),
@@ -57,20 +57,22 @@ FILAMENTS = {
             ("Matte Grass Green",    True),
             ("Matte Latte Brown",    True),
             ("Matte Scarlet Red",    True),
-            ("Matte Ice Blue",       False),
+            ("Matte Ice Blue",       True),
             ("Matte Marine Blue",    True),
             ("Matte Dark Blue",      True),
             ("Matte Dark Brown",     True),
             ("Matte Dark Green",     True),
             ("Matte Desert Tan",     True),
             ("Matte Bone White",     False),
-            ("Matte Plum",           False),
-            ("Matte Sky Blue",       False),
-            ("Matte Apple Green",    False),
-            ("Matte Dark Chocolate", False),
+            ("Matte Plum",           True),
+            ("Matte Sky Blue",       True),
+            ("Matte Apple Green",    True),
+            ("Matte Dark Chocolate", True),
             ("Matte Caramel",        False),
-            ("Matte Terracotta",     False),
+            ("Matte Terracotta",     True),
             ("Matte Nardo Gray",     True),
+            ("Matte Lilac Purple",   True),
+            ("Matte Dark Red",       True),
         ],
     },
     "PETG Basic": {
@@ -78,7 +80,7 @@ FILAMENTS = {
         "colors": [
             ("Black",      True),
             ("White",      True),
-            ("Gray",       False),
+            ("Gray",       True),
             ("Red",        True),
             ("Yellow",     True),
             ("Reflex Blue",True),
@@ -101,12 +103,13 @@ FILAMENTS = {
             ("Forest Green", False),
             ("Lake Blue",    False),
             ("Peanut Brown", False),
+            ("Red",          False),
         ],
     },
     "TPU 95A HF": {
         "url": "https://us.store.bambulab.com/products/tpu-95a-hf",
         "colors": [
-            ("Black",  False),
+            ("Black",  True),
             ("White",  True),
             ("Gray",   True),
             ("Yellow", True),
@@ -117,9 +120,9 @@ FILAMENTS = {
     "TPU for AMS": {
         "url": "https://us.store.bambulab.com/products/tpu-for-ams",
         "colors": [
-            ("Red",       False),
-            ("Yellow",    False),
-            ("Blue",      False),
+            ("Red",       True),
+            ("Yellow",    True),
+            ("Blue",      True),
             ("Neon Green",True),
             ("White",     True),
             ("Gray",      True),
@@ -133,7 +136,7 @@ FILAMENTS = {
             ("85A — Neon Orange",  True),
             ("85A — Black",        True),
             ("85A — Flesh",        True),
-            ("85A — Lime Green",   False),
+            ("85A — Lime Green",   True),
             ("90A — Black",        True),
             ("90A — White",        True),
             ("90A — Crystal Blue", True),
@@ -150,8 +153,9 @@ FILAMENTS = {
             ("85A — White",        True),
             ("90A — Flesh",        True),
             ("90A — Light Cyan",   False),
-            ("90A — Lime Green",   False),
+            ("90A — Lime Green",   True),
             ("90A — Neon Orange",  True),
+            ("90A — Quicksilver",  True),
         ],
     },
 }
