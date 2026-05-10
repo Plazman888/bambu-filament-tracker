@@ -4,7 +4,7 @@ from openpyxl.utils import get_column_letter
 import os, sys
 
 # ── Config ────────────────────────────────────────────────────────────────────
-TODAY = "5/9/26"
+TODAY = "5/10/26"
 
 XLSX_PATH = "/Users/michaelwhitney/Library/Mobile Documents/com~apple~CloudDocs/Documents/Claude/Projects/bambu-filament-tracker/data/Bambu_Filament_Tracker.xlsx"
 
@@ -21,12 +21,12 @@ FILAMENTS = {
             ("Silver",          False),
             ("Yellow",          True),
             ("Blue Grey",       True),
-            ("Pink",            True),
+            ("Pink",            False),
             ("Brown",           True),
             ("Red",             True),
             ("Black",           True),
             ("Bambu Green",     True),
-            ("Bronze",          True),
+            ("Bronze",          False),
             ("Gold",            True),
             ("Purple",          True),
             ("Magenta",         False),
@@ -64,10 +64,10 @@ FILAMENTS = {
             ("Matte Dark Green",     True),
             ("Matte Desert Tan",     True),
             ("Matte Bone White",     False),
-            ("Matte Plum",           True),
+            ("Matte Plum",           False),
             ("Matte Sky Blue",       True),
             ("Matte Apple Green",    True),
-            ("Matte Dark Chocolate", True),
+            ("Matte Dark Chocolate", False),
             ("Matte Caramel",        False),
             ("Matte Terracotta",     True),
             ("Matte Nardo Gray",     True),
@@ -133,29 +133,18 @@ FILAMENTS = {
         "url": "https://us.store.bambulab.com/products/tpu-85a-tpu-90a",
         "colors": [
             ("85A — Light Cyan",   False),
-            ("85A — Neon Orange",  True),
+            ("85A — Neon Orange",  False),
             ("85A — Black",        True),
             ("85A — Flesh",        True),
             ("85A — Lime Green",   True),
             ("90A — Black",        True),
             ("90A — White",        True),
+            ("90A — Quicksilver",  True),
             ("90A — Crystal Blue", True),
             ("90A — Grape Jelly",  True),
             ("90A — Cocoa Brown",  True),
             ("90A — Frozen",       True),
             ("90A — Blaze",        True),
-            ("85A — Blaze",        True),
-            ("85A — Cocoa Brown",  True),
-            ("85A — Crystal Blue", True),
-            ("85A — Frozen",       True),
-            ("85A — Grape Jelly",  True),
-            ("85A — Quicksilver",  True),
-            ("85A — White",        True),
-            ("90A — Flesh",        True),
-            ("90A — Light Cyan",   False),
-            ("90A — Lime Green",   True),
-            ("90A — Neon Orange",  True),
-            ("90A — Quicksilver",  True),
         ],
     },
 }
