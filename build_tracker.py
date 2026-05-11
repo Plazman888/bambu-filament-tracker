@@ -4,7 +4,7 @@ from openpyxl.utils import get_column_letter
 import os, sys
 
 # ── Config ────────────────────────────────────────────────────────────────────
-TODAY = "5/10/26"
+TODAY = "5/11/26"
 
 XLSX_PATH = "/Users/michaelwhitney/Library/Mobile Documents/com~apple~CloudDocs/Documents/Claude/Projects/bambu-filament-tracker/data/Bambu_Filament_Tracker.xlsx"
 
@@ -22,7 +22,7 @@ FILAMENTS = {
             ("Yellow",          True),
             ("Blue Grey",       True),
             ("Pink",            False),
-            ("Brown",           True),
+            ("Brown",           False),
             ("Red",             True),
             ("Black",           True),
             ("Bambu Green",     True),
@@ -40,7 +40,7 @@ FILAMENTS = {
             ("Indigo Purple",   True),
             ("Bright Green",    True),
             ("Cocoa Brown",     True),
-            ("Hot Pink",        True),
+            ("Hot Pink",        False),
             ("Cobalt Blue",     True),
             ("Pumpkin Orange",  True),
         ],
@@ -65,12 +65,12 @@ FILAMENTS = {
             ("Matte Desert Tan",     True),
             ("Matte Bone White",     False),
             ("Matte Plum",           False),
-            ("Matte Sky Blue",       True),
+            ("Matte Sky Blue",       False),
             ("Matte Apple Green",    True),
             ("Matte Dark Chocolate", False),
             ("Matte Caramel",        False),
             ("Matte Terracotta",     True),
-            ("Matte Nardo Gray",     True),
+            ("Matte Nardo Gray",     False),
             ("Matte Lilac Purple",   True),
             ("Matte Dark Red",       True),
         ],
