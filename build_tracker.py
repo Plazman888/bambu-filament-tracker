@@ -4,7 +4,7 @@ from openpyxl.utils import get_column_letter
 import os, sys
 
 # ── Config ────────────────────────────────────────────────────────────────────
-TODAY = "5/11/26"
+TODAY = "5/12/26"
 
 XLSX_PATH = "/Users/michaelwhitney/Library/Mobile Documents/com~apple~CloudDocs/Documents/Claude/Projects/bambu-filament-tracker/data/Bambu_Filament_Tracker.xlsx"
 
@@ -22,7 +22,7 @@ FILAMENTS = {
             ("Yellow",          True),
             ("Blue Grey",       True),
             ("Pink",            False),
-            ("Brown",           False),
+            ("Brown",           True),
             ("Red",             True),
             ("Black",           True),
             ("Bambu Green",     True),
@@ -40,7 +40,7 @@ FILAMENTS = {
             ("Indigo Purple",   True),
             ("Bright Green",    True),
             ("Cocoa Brown",     True),
-            ("Hot Pink",        False),
+            ("Hot Pink",        True),
             ("Cobalt Blue",     True),
             ("Pumpkin Orange",  True),
         ],
@@ -51,11 +51,11 @@ FILAMENTS = {
             ("Matte Ivory White",    True),
             ("Matte Ash Gray",       True),
             ("Matte Mandarin Orange",True),
-            ("Matte Sakura Pink",    False),
+            ("Matte Sakura Pink",    True),
             ("Matte Lemon Yellow",   True),
             ("Matte Charcoal",       True),
             ("Matte Grass Green",    True),
-            ("Matte Latte Brown",    True),
+            ("Matte Latte Brown",    False),
             ("Matte Scarlet Red",    True),
             ("Matte Ice Blue",       True),
             ("Matte Marine Blue",    True),
@@ -70,7 +70,7 @@ FILAMENTS = {
             ("Matte Dark Chocolate", False),
             ("Matte Caramel",        False),
             ("Matte Terracotta",     True),
-            ("Matte Nardo Gray",     False),
+            ("Matte Nardo Gray",     True),
             ("Matte Lilac Purple",   True),
             ("Matte Dark Red",       True),
         ],
@@ -132,7 +132,7 @@ FILAMENTS = {
     "TPU 85A-90A": {
         "url": "https://us.store.bambulab.com/products/tpu-85a-tpu-90a",
         "colors": [
-            ("85A — Light Cyan",   False),
+            ("85A — Light Cyan",   True),
             ("85A — Neon Orange",  False),
             ("85A — Black",        True),
             ("85A — Flesh",        True),
