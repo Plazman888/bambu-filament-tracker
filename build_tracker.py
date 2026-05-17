@@ -4,7 +4,7 @@ from openpyxl.utils import get_column_letter
 import os, sys
 
 # ── Config ────────────────────────────────────────────────────────────────────
-TODAY = "5/16/26"
+TODAY = "5/17/26"
 
 XLSX_PATH = "/Users/michaelwhitney/Library/Mobile Documents/com~apple~CloudDocs/Documents/Claude/Projects/bambu-filament-tracker/data/Bambu_Filament_Tracker.xlsx"
 
@@ -21,7 +21,7 @@ FILAMENTS = {
             ("Silver",          False),
             ("Yellow",          True),
             ("Blue Grey",       True),
-            ("Pink",            False),
+            ("Pink",            True),
             ("Brown",           True),
             ("Red",             True),
             ("Black",           True),
@@ -64,12 +64,12 @@ FILAMENTS = {
             ("Matte Dark Green",     True),
             ("Matte Desert Tan",     True),
             ("Matte Bone White",     False),
-            ("Matte Plum",           False),
+            ("Matte Plum",           True),
             ("Matte Sky Blue",       True),
-            ("Matte Apple Green",    False),
+            ("Matte Apple Green",    True),
             ("Matte Dark Chocolate", True),
             ("Matte Caramel",        False),
-            ("Matte Terracotta",     False),
+            ("Matte Terracotta",     True),
             ("Matte Nardo Gray",     True),
             ("Matte Lilac Purple",   True),
             ("Matte Dark Red",       True),
@@ -90,9 +90,9 @@ FILAMENTS = {
     "PETG HF": {
         "url": "https://us.store.bambulab.com/products/petg-hf",
         "colors": [
-            ("Blue",         False),
+            ("Blue",         True),
             ("Black",        False),
-            ("Gray",         False),
+            ("Gray",         True),
             ("White",        False),
             ("Dark Gray",    False),
             ("Cream",        False),
@@ -126,7 +126,7 @@ FILAMENTS = {
             ("Neon Green",True),
             ("White",     True),
             ("Gray",      True),
-            ("Black",     False),
+            ("Black",     True),
         ],
     },
     "TPU 85A-90A": {
